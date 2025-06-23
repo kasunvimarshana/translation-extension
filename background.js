@@ -2,81 +2,89 @@ import { TranslationService } from './services/translationService.js';
 // import dictionary from './data/dictionary.json' assert { type: 'json' };
 import { DICTIONARY } from './data/dictionary.js';
 
-// Service instance
-const translationService = new TranslationService(DICTIONARY, 'es');
+let translationService;
+let currentLang = 'es';
 
-// Maintain a queue for long-running requests
-const requestQueue = [];
-let processing = false;
+// Initialize with saved lang or default
+async function initTranslationService() {
+  try {
+    const storage = await chrome.storage.local.get({ targetLang: 'es' });
+    currentLang = storage.targetLang;
+    translationService = new TranslationService(DICTIONARY, currentLang);
+    console.log(`[Background] Initialized translation service with lang: ${currentLang}`);
+  } catch (err) {
+    console.error('[Background] Failed to init translation service', err);
+    currentLang = 'es';
+    translationService = new TranslationService(DICTIONARY, 'es');
+  }
+}
+
+// Monitor storage changes
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === 'local' && changes.targetLang) {
+    const newLang = changes.targetLang.newValue;
+    console.log(`[Background] targetLang changed to: ${newLang}`);
+    currentLang = newLang;
+    translationService = new TranslationService(DICTIONARY, currentLang);
+  }
+});
 
 chrome.runtime.onInstalled.addListener(() => {
-  console.log('[Background] Extension installed, creating context menu.');
+  console.log('[Background] Installed');
   chrome.contextMenus.create({
     id: 'translate',
     title: 'Translate Selected Text',
-    contexts: ['selection'],
+    contexts: ['selection']
   });
+  initTranslationService();
 });
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === 'translate' && info.selectionText) {
-    console.log(
-      `[Background] Context menu clicked, enqueueing text: "${info.selectionText}" for tabId: ${tab.id}`
-    );
+    console.log(`[Background] Translate clicked: "${info.selectionText}"`);
     enqueueRequest({ text: info.selectionText, tabId: tab.id });
   }
 });
 
-function enqueueRequest(request) {
-  console.log(`[Background] Enqueueing request: "${request.text}"`);
-  requestQueue.push(request);
+const requestQueue = [];
+let processing = false;
+
+function enqueueRequest(req) {
+  requestQueue.push(req);
+  console.log(`[Background] Enqueued request: "${req.text}"`);
   processQueue();
 }
 
 async function processQueue() {
-  if (processing) {
-    console.log('[Background] Already processing queue, skipping.');
-    return;
-  }
-  if (requestQueue.length === 0) {
-    console.log('[Background] Request queue empty, nothing to process.');
-    return;
-  }
-
-  console.log('[Background] Starting to process request queue.');
+  if (processing || requestQueue.length === 0) return;
   processing = true;
 
   while (requestQueue.length > 0) {
     const { text, tabId } = requestQueue.shift();
-    console.log(`[Background] Processing text: "${text}" for tabId: ${tabId}`);
+    console.log(`[Background] Processing: "${text}"`);
 
     try {
-      const result = await longRunningTranslate(text);
-      console.log(
-        `[Background] Translation result: "${result}" for tabId: ${tabId}`
-      );
-      
+      const translated = await simulateTranslation(text);
       chrome.tabs.sendMessage(tabId, {
         action: 'showTranslation',
-        translationResult: result,
+        translationResult: translated
       });
-    } catch (error) {
-      console.error('[Background] Error processing translation:', error);
+      console.log(`[Background] Sent translation to tab ${tabId}: "${translated}"`);
+    } catch (err) {
+      console.error('[Background] Error processing request:', err);
     }
   }
 
-  console.log('[Background] Finished processing request queue.');
   processing = false;
+  console.log('[Background] Done processing queue');
 }
 
-function longRunningTranslate(text) {
-  return new Promise((resolve) => {
-    console.log(
-      `[Background] Simulating async translation for text: "${text}"`
-    );
+function simulateTranslation(text) {
+  return new Promise(resolve => {
+    console.log(`[Background] Simulating translation: "${text}"`);
     setTimeout(() => {
       const result = translationService.translate(text);
-      console.log(`[Background] Simulated translation complete: "${result}"`);
+      console.log(`[Background] Simulated result: "${result}"`);
       resolve(result);
     }, 100);
   });

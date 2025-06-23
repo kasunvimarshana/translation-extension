@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Translation Options</title>
+  </head>
+  <body>
+    <h2>Translation Options</h2>
+    <label for="targetLang">Target Language:</label>
+    <select id="targetLang">
+      <option value="es">Spanish</option>
+      <option value="fr">French</option>
+      <option value="en">English</option>
+    </select>
+    <button id="save">Save</button>
+
+    <!-- <script>
+      async function loadOptions() {
+        try {
+          const storage = await chrome.storage.local.get({ targetLang: 'es' });
+          document.getElementById('targetLang').value = storage.targetLang;
+          console.log(`[Options] Loaded targetLang: ${storage.targetLang}`);
+        } catch (e) {
+          console.error('[Options] Failed to load options', e);
+        }
+      }
+
+      async function saveOptions() {
+        const targetLang = document.getElementById('targetLang').value;
+        try {
+          await chrome.storage.local.set({ targetLang });
+          console.log(`[Options] Saved targetLang: ${targetLang}`);
+          alert('Options saved!');
+        } catch (e) {
+          console.error('[Options] Failed to save options', e);
+          alert('Error saving options');
+        }
+      }
+
+      document.getElementById('save').addEventListener('click', saveOptions);
+      loadOptions();
+    </script> -->
+
+    <!-- Link external JS -->
+    <script src="options.js" type="module"></script>
+  </body>
+</html>

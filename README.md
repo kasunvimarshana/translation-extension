@@ -4,15 +4,18 @@ translation-extension/
 ├─ icons/
 │  └─ icon.png
 ├─ data/
-│  └─ dictionary.json
+│  └─ dictionary.js
 ├─ services/
 │  └─ translationService.js
-├─ background.js           (Service Worker / Main Logic)
-├─ content.js              (Displays Results)
-├─ tooltip.js              (UI Logic)
+├─ background.js
+├─ content.js
+├─ tooltip.js
 ├─ styles/
 │  └─ tooltip.css
+├─ options/
+│  └─ options.html
 ├─ manifest.json
+├─ README.md
 
 
 # Install & Test
