@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Translate selected text using a built-in dictionary.",
   "manifest_version": 3,
-  "permissions": ["contextMenus", "activeTab", "scripting", "storage"],
+  "permissions": ["contextMenus", "activeTab", "scripting"],
   "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "background.js",
@@ -21,18 +21,13 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"],
-      "css": ["styles/tooltip.css"]
+      "js": ["content.js"]
     }
   ],
   "web_accessible_resources": [
     {
-      "resources": ["tooltip.js"],
+      "resources": ["translation.js"],
       "matches": ["<all_urls>"]
     }
-  ],
-  "options_ui": {
-    "page": "options/options.html",
-    "open_in_tab": false
-  }
+  ]
 }

@@ -1,23 +1,9 @@
-chrome.runtime.onMessage.addListener((message) => {
-  console.log('[Content] Received message:', message);
+(async () => {
+  const selectedText = window.getSelection().toString().trim();
+  if (!selectedText) return;
 
-  if (message.action === "showTranslation") {
-    console.log('[Content] Action is showTranslation, loading tooltip module...');
+  const module = await import(chrome.runtime.getURL('translation.js'));
+  const translation = module.translateText(selectedText);
 
-    import(chrome.runtime.getURL('tooltip.js'))
-      .then(module => {
-        console.log('[Content] Tooltip module loaded.');
-
-        const { translationResult } = message;
-        const text = `${translationResult?.translation ?? ''} (confidence: ${translationResult?.confidence ?? 'N/A'})`;
-
-        console.log('[Content] Showing tooltip with text:', text);
-        module.showTooltip(text);
-      })
-      .catch(error => {
-        console.error('[Content] Failed to load tooltip module:', error);
-      });
-  } else {
-    console.log('[Content] Received unknown action:', message.action);
-  }
-});
+  alert(`Original : ${selectedText}\nTranslated : ${translation}`);
+})();

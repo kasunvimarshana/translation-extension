@@ -1,22 +1,13 @@
 "# translation-extension"
 
 translation-extension/
-├─ icons/
-│  └─ icon.png
-├─ data/
-│  └─ dictionary.js
-├─ services/
-│  └─ translationService.js
+├─ manifest.json
 ├─ background.js
 ├─ content.js
-├─ tooltip.js
-├─ styles/
-│  └─ tooltip.css
-├─ options/
-│  └─ options.html
-├─ manifest.json
+├─ translation.js
+├─ icons/
+│  └─ icon.png
 ├─ README.md
-
 
 # Install & Test
 ## Save files in a directory (translation-extension).
