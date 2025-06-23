@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LocalTranslate - Browser Translation Extension</title>
+    <style>
+        :root {
+            --primary: #4a6fa5;
+            --primary-dark: #3a5a8a;
+            --secondary: #f5f7fa;
+            --text: #333;
+            --text-light: #666;
+            --border: #ddd;
+            --success: #4caf50;
+            --error: #f44336;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--secondary);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+        
+        .main-content {
+            padding: 25px;
+        }
+        
+        .section {
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+            color: var(--primary-dark);
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+        
+        select, textarea, input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        select:focus, textarea:focus, input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background 0.3s;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background: var(--primary-dark);
+        }
+        
+        button.secondary {
+            background: white;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+        
+        button.secondary:hover {
+            background: var(--secondary);
+        }
+        
+        .result-container {
+            background: var(--secondary);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            min-height: 100px;
+            border: 1px solid var(--border);
+        }
+        
+        .result-text {
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+        
+        .language-info {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed var(--border);
+        }
+        
+        .dictionary-section {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 25px;
+        }
+        
+        .dictionary-item {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .dictionary-item:last-child {
+            border-bottom: none;
+        }
+        
+        .dictionary-item div {
+            flex: 1;
+        }
+        
+        .dictionary-item button {
+            width: auto;
+            padding: 6px 12px;
+            margin-left: 10px;
+            font-size: 0.85rem;
+        }
+        
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .success {
+            background: rgba(76, 175, 80, 0.1);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+        
+        .error {
+            background: rgba(244, 67, 54, 0.1);
+            color: var(--error);
+            border: 1px solid var(--error);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .tab-container {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab.active {
+            border-bottom: 3px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-light);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border);
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>LocalTranslate</h1>
+            <p class="subtitle">Offline Browser Translation Extension</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="tab-container">
+                <div class="tab active" data-tab="translate">Translation</div>
+                <div class="tab" data-tab="dictionary">Dictionary</div>
+                <div class="tab" data-tab="settings">Settings</div>
+            </div>
+            
+            <!-- Translation Tab -->
+            <div id="translate-tab" class="tab-content active">
+                <div class="section">
+                    <h2 class="section-title">Text Translation</h2>
+                    
+                    <div class="input-group">
+                        <label for="source-text">Text to translate:</label>
+                        <textarea id="source-text" placeholder="Enter text to translate..."></textarea>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="source-lang">Detected Language:</label>
+                        <input type="text" id="source-lang" readonly>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="target-lang">Translate to:</label>
+                        <select id="target-lang">
+                            <option value="es">Spanish</option>
+                            <option value="fr">French</option>
+                            <option value="de">German</option>
+                            <option value="it">Italian</option>
+                            <option value="pt">Portuguese</option>
+                        </select>
+                    </div>
+                    
+                    <button id="translate-btn">Translate Text</button>
+                    
+                    <div class="result-container">
+                        <div class="result-text" id="translation-result">Translation will appear here...</div>
+                        <div class="language-info" id="translation-info"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Dictionary Tab -->
+            <div id="dictionary-tab" class="tab-content">
+                <div class="section">
+                    <h2 class="section-title">Manage Dictionary</h2>
+                    
+                    <div class="dictionary-section">
+                        <div class="input-group">
+                            <label for="source-word">Source Word:</label>
+                            <input type="text" id="source-word" placeholder="Enter word in source language">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="target-word">Translated Word:</label>
+                            <input type="text" id="target-word" placeholder="Enter translation">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="dictionary-lang">Language Pair:</label>
+                            <select id="dictionary-lang">
+                                <option value="en-es">English → Spanish</option>
+                                <option value="en-fr">English → French</option>
+                                <option value="en-de">English → German</option>
+                                <option value="en-it">English → Italian</option>
+                                <option value="en-pt">English → Portuguese</option>
+                            </select>
+                        </div>
+                        
+                        <button id="add-word-btn">Add to Dictionary</button>
+                        
+                        <div class="message hidden" id="dictionary-message"></div>
+                    </div>
+                    
+                    <div class="section">
+                        <h2 class="section-title">Your Dictionary Entries</h2>
+                        <div id="dictionary-entries">
+                            <!-- Dictionary entries will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Settings Tab -->
+            <div id="settings-tab" class="tab-content">
+                <div class="section">
+                    <h2 class="section-title">Extension Settings</h2>
+                    
+                    <div class="input-group">
+                        <label for="enable-hotkey">Enable Translation Hotkey (Ctrl+Shift+T)</label>
+                        <select id="enable-hotkey">
+                            <option value="true">Enabled</option>
+                            <option value="false">Disabled</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="default-lang">Default Target Language</label>
+                        <select id="default-lang">
+                            <option value="es">Spanish</option>
+                            <option value="fr">French</option>
+                            <option value="de">German</option>
+                            <option value="it">Italian</option>
+                            <option value="pt">Portuguese</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="translation-history">Translation History</label>
+                        <select id="translation-history">
+                            <option value="10">Last 10 translations</option>
+                            <option value="25">Last 25 translations</option>
+                            <option value="50">Last 50 translations</option>
+                            <option value="0">Disabled</option>
+                        </select>
+                    </div>
+                    
+                    <button id="save-settings">Save Settings</button>
+                    <button id="reset-dictionary" class="secondary">Reset Dictionary</button>
+                    <button id="export-data" class="secondary">Export Dictionary & Settings</button>
+                    <button id="import-data" class="secondary">Import Dictionary & Settings</button>
+                    
+                    <div class="message hidden" id="settings-message"></div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>LocalTranslate v1.0 | Offline Translation Extension | All processing happens locally in your browser</p>
+        </footer>
+    </div>
+
+    <script>
+        // Main Translation Engine
+        class TranslationEngine {
+            constructor() {
+                this.dictionary = {};
+                this.loadDictionary();
+                this.settings = this.loadSettings();
+            }
+            
+            // Initialize with some sample data
+            loadDictionary() {
+                const savedDictionary = localStorage.getItem('translationDictionary');
+                if (savedDictionary) {
+                    this.dictionary = JSON.parse(savedDictionary);
+                } else {
+                    // Add some default translations
+                    this.dictionary = {
+                        'en-es': {
+                            'hello': 'hola',
+                            'goodbye': 'adiós',
+                            'thank you': 'gracias',
+                            'please': 'por favor',
+                            'yes': 'sí',
+                            'no': 'no'
+                        },
+                        'en-fr': {
+                            'hello': 'bonjour',
+                            'goodbye': 'au revoir',
+                            'thank you': 'merci',
+                            'please': 's\'il vous plaît',
+                            'yes': 'oui',
+                            'no': 'non'
+                        },
+                        'en-de': {
+                            'hello': 'hallo',
+                            'goodbye': 'auf wiedersehen',
+                            'thank you': 'danke',
+                            'please': 'bitte',
+                            'yes': 'ja',
+                            'no': 'nein'
+                        }
+                    };
+                    this.saveDictionary();
+                }
+            }
+            
+            saveDictionary() {
+                localStorage.setItem('translationDictionary', JSON.stringify(this.dictionary));
+            }
+            
+            loadSettings() {
+                const savedSettings = localStorage.getItem('translationSettings');
+                if (savedSettings) {
+                    return JSON.parse(savedSettings);
+                }
+                
+                // Default settings
+                return {
+                    hotkeyEnabled: true,
+                    defaultTargetLang: 'es',
+                    translationHistorySize: 10,
+                    history: []
+                };
+            }
+            
+            saveSettings() {
+                localStorage.setItem('translationSettings', JSON.stringify(this.settings));
+            }
+            
+            detectLanguage(text) {
+                // Simple language detection based on common words
+                const words = text.toLowerCase().split(/\s+/);
+                
+                // Check for English
+                const englishWords = ['the', 'be', 'to', 'of', 'and', 'a', 'in', 'that', 'have'];
+                if (englishWords.some(word => words.includes(word))) {
+                    return 'English';
+                }
+                
+                // Check for Spanish
+                const spanishWords = ['el', 'la', 'de', 'que', 'y', 'a', 'en', 'un', 'por'];
+                if (spanishWords.some(word => words.includes(word))) {
+                    return 'Spanish';
+                }
+                
+                // Check for French
+                const frenchWords = ['le', 'la', 'de', 'et', 'à', 'en', 'un', 'que', 'pour'];
+                if (frenchWords.some(word => words.includes(word))) {
+                    return 'French';
+                }
+                
+                // Check for German
+                const germanWords = ['der', 'die', 'das', 'und', 'in', 'den', 'von', 'zu', 'für'];
+                if (germanWords.some(word => words.includes(word))) {
+                    return 'German';
+                }
+                
+                return 'Unknown';
+            }
+            
+            translate(text, targetLang) {
+                if (!text.trim()) return '';
+                
+                const sourceLang = 'en'; // Our dictionary is based on English as source
+                const langPair = `${sourceLang}-${targetLang}`;
+                
+                // First try to find exact matches in dictionary
+                const lowerText = text.toLowerCase();
+                if (this.dictionary[langPair] && this.dictionary[langPair][lowerText]) {
+                    return this.dictionary[langPair][lowerText];
+                }
+                
+                // Try to translate word by word
+                const words = text.split(' ');
+                const translatedWords = words.map(word => {
+                    const lowerWord = word.toLowerCase();
+                    
+                    // Check if word exists in dictionary
+                    if (this.dictionary[langPair] && this.dictionary[langPair][lowerWord]) {
+                        return this.dictionary[langPair][lowerWord];
+                    }
+                    
+                    // Simple transformation rules for demonstration
+                    if (targetLang === 'es') {
+                        if (word.endsWith('ing')) return word.replace(/ing$/, 'ando');
+                        if (word.endsWith('ed')) return word.replace(/ed$/, 'ado');
+                    }
+                    
+                    // If no translation found, return original word
+                    return word;
+                });
+                
+                return translatedWords.join(' ');
+            }
+            
+            addToDictionary(source, translation, langPair) {
+                if (!source.trim() || !translation.trim()) return false;
+                
+                if (!this.dictionary[langPair]) {
+                    this.dictionary[langPair] = {};
+                }
+                
+                this.dictionary[langPair][source.toLowerCase()] = translation;
+                this.saveDictionary();
+                return true;
+            }
+            
+            removeFromDictionary(source, langPair) {
+                if (!this.dictionary[langPair] || !this.dictionary[langPair][source]) return false;
+                
+                delete this.dictionary[langPair][source];
+                this.saveDictionary();
+                return true;
+            }
+            
+            getDictionaryEntries(langPair) {
+                if (!this.dictionary[langPair]) return [];
+                
+                return Object.entries(this.dictionary[langPair]).map(([source, translation]) => ({
+                    source,
+                    translation
+                }));
+            }
+        }
+
+        // UI Controller
+        class TranslationUI {
+            constructor() {
+                this.engine = new TranslationEngine();
+                this.initElements();
+                this.initEventListeners();
+                this.renderDictionary();
+                this.loadSettingsToUI();
+            }
+            
+            initElements() {
+                this.elements = {
+                    sourceText: document.getElementById('source-text'),
+                    sourceLang: document.getElementById('source-lang'),
+                    targetLang: document.getElementById('target-lang'),
+                    translateBtn: document.getElementById('translate-btn'),
+                    translationResult: document.getElementById('translation-result'),
+                    translationInfo: document.getElementById('translation-info'),
+                    
+                    // Dictionary elements
+                    sourceWord: document.getElementById('source-word'),
+                    targetWord: document.getElementById('target-word'),
+                    dictionaryLang: document.getElementById('dictionary-lang'),
+                    addWordBtn: document.getElementById('add-word-btn'),
+                    dictionaryMessage: document.getElementById('dictionary-message'),
+                    dictionaryEntries: document.getElementById('dictionary-entries'),
+                    
+                    // Settings elements
+                    enableHotkey: document.getElementById('enable-hotkey'),
+                    defaultLang: document.getElementById('default-lang'),
+                    translationHistory: document.getElementById('translation-history'),
+                    saveSettings: document.getElementById('save-settings'),
+                    resetDictionary: document.getElementById('reset-dictionary'),
+                    exportData: document.getElementById('export-data'),
+                    importData: document.getElementById('import-data'),
+                    settingsMessage: document.getElementById('settings-message'),
+                    
+                    // Tabs
+                    tabs: document.querySelectorAll('.tab'),
+                    tabContents: document.querySelectorAll('.tab-content')
+                };
+            }
+            
+            initEventListeners() {
+                // Translation events
+                this.elements.translateBtn.addEventListener('click', () => this.translateText());
+                this.elements.sourceText.addEventListener('input', () => this.detectLanguage());
+                
+                // Dictionary events
+                this.elements.addWordBtn.addEventListener('click', () => this.addWordToDictionary());
+                
+                // Settings events
+                this.elements.saveSettings.addEventListener('click', () => this.saveSettings());
+                this.elements.resetDictionary.addEventListener('click', () => this.resetDictionary());
+                this.elements.exportData.addEventListener('click', () => this.exportData());
+                this.elements.importData.addEventListener('click', () => this.importData());
+                
+                // Tab switching
+                this.elements.tabs.forEach(tab => {
+                    tab.addEventListener('click', () => this.switchTab(tab.dataset.tab));
+                });
+            }
+            
+            switchTab(tabName) {
+                // Update active tab
+                this.elements.tabs.forEach(tab => {
+                    if (tab.dataset.tab === tabName) {
+                        tab.classList.add('active');
+                    } else {
+                        tab.classList.remove('active');
+                    }
+                });
+                
+                // Show active tab content
+                this.elements.tabContents.forEach(content => {
+                    if (content.id === `${tabName}-tab`) {
+                        content.classList.add('active');
+                    } else {
+                        content.classList.remove('active');
+                    }
+                });
+            }
+            
+            detectLanguage() {
+                const text = this.elements.sourceText.value;
+                if (!text.trim()) {
+                    this.elements.sourceLang.value = '';
+                    return;
+                }
+                
+                const detected = this.engine.detectLanguage(text);
+                this.elements.sourceLang.value = detected;
+            }
+            
+            translateText() {
+                const text = this.elements.sourceText.value;
+                const targetLang = this.elements.targetLang.value;
+                
+                if (!text.trim()) {
+                    this.showMessage(this.elements.translationResult, 'Please enter text to translate', true);
+                    return;
+                }
+                
+                const detectedLang = this.engine.detectLanguage(text);
+                const translation = this.engine.translate(text, targetLang);
+                
+                this.elements.translationResult.textContent = translation;
+                this.elements.translationInfo.textContent = `Detected as ${detectedLang}, translated to ${this.getLangName(targetLang)}`;
+                
+                // Add to history
+                this.addToHistory(text, translation, detectedLang, this.getLangName(targetLang));
+            }
+            
+            getLangName(langCode) {
+                const langNames = {
+                    'es': 'Spanish',
+                    'fr': 'French',
+                    'de': 'German',
+                    'it': 'Italian',
+                    'pt': 'Portuguese'
+                };
+                return langNames[langCode] || langCode;
+            }
+            
+            addToHistory(source, translation, sourceLang, targetLang) {
+                this.engine.settings.history.unshift({
+                    source,
+                    translation,
+                    sourceLang,
+                    targetLang,
+                    timestamp: new Date().toISOString()
+                });
+                
+                // Limit history size
+                if (this.engine.settings.history.length > this.engine.settings.translationHistorySize) {
+                    this.engine.settings.history.pop();
+                }
+                
+                this.engine.saveSettings();
+            }
+            
+            addWordToDictionary() {
+                const source = this.elements.sourceWord.value.trim();
+                const translation = this.elements.targetWord.value.trim();
+                const langPair = this.elements.dictionaryLang.value;
+                
+                if (!source || !translation) {
+                    this.showDictionaryMessage('Please enter both source and translation', true);
+                    return;
+                }
+                
+                const success = this.engine.addToDictionary(source, translation, langPair);
+                if (success) {
+                    this.showDictionaryMessage('Word added to dictionary successfully!');
+                    this.elements.sourceWord.value = '';
+                    this.elements.targetWord.value = '';
+                    this.renderDictionary();
+                } else {
+                    this.showDictionaryMessage('Failed to add word to dictionary', true);
+                }
+            }
+            
+            showDictionaryMessage(message, isError = false) {
+                this.elements.dictionaryMessage.textContent = message;
+                this.elements.dictionaryMessage.className = 'message';
+                this.elements.dictionaryMessage.classList.add(isError ? 'error' : 'success');
+                this.elements.dictionaryMessage.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    this.elements.dictionaryMessage.classList.add('hidden');
+                }, 3000);
+            }
+            
+            renderDictionary() {
+                const langPair = this.elements.dictionaryLang.value;
+                const entries = this.engine.getDictionaryEntries(langPair);
+                
+                if (entries.length === 0) {
+                    this.elements.dictionaryEntries.innerHTML = '<div class="dictionary-item"><div>No entries found for this language pair</div></div>';
+                    return;
+                }
+                
+                this.elements.dictionaryEntries.innerHTML = '';
+                
+                entries.forEach(entry => {
+                    const entryElement = document.createElement('div');
+                    entryElement.className = 'dictionary-item';
+                    entryElement.innerHTML = `
+                        <div>
+                            <strong>${entry.source}</strong> → ${entry.translation}
+                        </div>
+                        <button class="remove-entry" data-source="${entry.source}" data-lang="${langPair}">Remove</button>
+                    `;
+                    this.elements.dictionaryEntries.appendChild(entryElement);
+                });
+                
+                // Add event listeners to remove buttons
+                document.querySelectorAll('.remove-entry').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const source = e.target.dataset.source;
+                        const langPair = e.target.dataset.lang;
+                        this.removeDictionaryEntry(source, langPair);
+                    });
+                });
+            }
+            
+            removeDictionaryEntry(source, langPair) {
+                if (confirm(`Are you sure you want to remove "${source}" from your dictionary?`)) {
+                    const success = this.engine.removeFromDictionary(source, langPair);
+                    if (success) {
+                        this.showDictionaryMessage('Word removed from dictionary');
+                        this.renderDictionary();
+                    } else {
+                        this.showDictionaryMessage('Failed to remove word', true);
+                    }
+                }
+            }
+            
+            loadSettingsToUI() {
+                this.elements.enableHotkey.value = this.engine.settings.hotkeyEnabled.toString();
+                this.elements.defaultLang.value = this.engine.settings.defaultTargetLang;
+                this.elements.targetLang.value = this.engine.settings.defaultTargetLang;
+                this.elements.translationHistory.value = this.engine.settings.translationHistorySize.toString();
+            }
+            
+            saveSettings() {
+                this.engine.settings = {
+                    hotkeyEnabled: this.elements.enableHotkey.value === 'true',
+                    defaultTargetLang: this.elements.defaultLang.value,
+                    translationHistorySize: parseInt(this.elements.translationHistory.value),
+                    history: this.engine.settings.history // Preserve existing history
+                };
+                
+                this.engine.saveSettings();
+                this.showSettingsMessage('Settings saved successfully!');
+            }
+            
+            showSettingsMessage(message, isError = false) {
+                this.elements.settingsMessage.textContent = message;
+                this.elements.settingsMessage.className = 'message';
+                this.elements.settingsMessage.classList.add(isError ? 'error' : 'success');
+                this.elements.settingsMessage.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    this.elements.settingsMessage.classList.add('hidden');
+                }, 3000);
+            }
+            
+            resetDictionary() {
+                if (confirm('Are you sure you want to reset your dictionary? This action cannot be undone.')) {
+                    localStorage.removeItem('translationDictionary');
+                    this.engine.loadDictionary();
+                    this.renderDictionary();
+                    this.showSettingsMessage('Dictionary has been reset');
+                }
+            }
+            
+            exportData() {
+                const data = {
+                    dictionary: this.engine.dictionary,
+                    settings: this.engine.settings
+                };
+                
+                const dataStr = JSON.stringify(data);
+                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                
+                const exportFileDefaultName = 'localtranslate-data.json';
+                
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', exportFileDefaultName);
+                linkElement.click();
+            }
+            
+            importData() {
+                const fileInput = document.createElement('input');
+                fileInput.type = 'file';
+                fileInput.accept = '.json';
+                
+                fileInput.onchange = e => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    
+                    const reader = new FileReader();
+                    reader.onload = event => {
+                        try {
+                            const data = JSON.parse(event.target.result);
+                            
+                            if (data.dictionary && data.settings) {
+                                localStorage.setItem('translationDictionary', JSON.stringify(data.dictionary));
+                                localStorage.setItem('translationSettings', JSON.stringify(data.settings));
+                                
+                                // Reload engine with new data
+                                this.engine = new TranslationEngine();
+                                this.renderDictionary();
+                                this.loadSettingsToUI();
+                                this.showSettingsMessage('Data imported successfully!');
+                            } else {
+                                this.showSettingsMessage('Invalid data format', true);
+                            }
+                        } catch (error) {
+                            this.showSettingsMessage('Error parsing file: ' + error.message, true);
+                        }
+                    };
+                    
+                    reader.readAsText(file);
+                };
+                
+                fileInput.click();
+            }
+        }
+
+        // Initialize the application when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            const translationUI = new TranslationUI();
+            
+            // For browser extension context - show instructions
+            if (chrome && chrome.runtime) {
+                translationUI.elements.translationInfo.textContent = 
+                    "Tip: Highlight text on any page, right-click, and select 'Translate with LocalTranslate'";
+            }
+        });
+    </script>
+</body>
+</html>
