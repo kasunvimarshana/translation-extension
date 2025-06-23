@@ -1,362 +1,572 @@
-class TranslationContentScript {
+// Content Script for Pure Translator Extension
+class TranslationUI {
   constructor() {
-    this.settings = {
-      autoDetectLanguage: true,
-      showConfidence: true,
-      enableContextMenu: true,
-      defaultTargetLanguage: "en",
-      enableHoverTranslation: false,
-    };
+    this.isActive = false;
+    this.translationWidget = null;
+    this.originalTexts = new Map();
+    this.translatedTexts = new Map();
+    this.currentLanguage = 'auto';
+    this.targetLanguage = 'en';
+    this.settings = {};
     this.initialize();
   }
 
   async initialize() {
-    this.settings = await this.getSettings();
-    this.createTranslationPopup();
+    await this.loadSettings();
+    this.createUIElements();
     this.setupEventListeners();
+    
+    // Inject styles
+    this.injectStyles();
+    
+    console.log('Pure Translator content script initialized');
   }
 
-  setupEventListeners() {
-    document.addEventListener("mouseup", (e) => {
-      setTimeout(() => this.handleTextSelection(e), 100);
-    });
-
-    document.addEventListener("keydown", (e) => {
-      if (e.ctrlKey && e.shiftKey && e.key === "T") {
-        e.preventDefault();
-        this.handleQuickTranslate();
-      }
-      if (e.key === "Escape") this.hideTranslationPopup();
-    });
-
-    if (this.settings.enableHoverTranslation) {
-      document.addEventListener("mouseover", (e) => this.handleHover(e));
-      document.addEventListener("mouseout", (e) => this.handleMouseOut(e));
-    }
-
-    window.addEventListener("message", (e) => {
-      if (e.data.source === "extension") this.handleExtensionMessage(e.data);
-    });
-
-    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-      if (request.action === "translatePage") {
-        this.translatePage(request.toLang);
-        sendResponse({ success: true });
-      }
-    });
-  }
-
-  handleTextSelection(event) {
-    const selection = window.getSelection();
-    const selectedText = selection.toString().trim();
-    
-    if (selectedText.length > 0 && selectedText.length < 500) {
-      const range = selection.getRangeAt(0);
-      const rect = range.getBoundingClientRect();
-      this.showTranslateButton(selectedText, rect);
-    } else {
-      this.hideTranslateButton();
-    }
-  }
-
-  showTranslateButton(text, rect) {
-    this.hideTranslateButton();
-    
-    const button = document.createElement("div");
-    button.id = "translate-button";
-    button.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M5 8l6 6" />
-      <path d="M4 14l6-6 2-3" />
-      <path d="M2 5h12" />
-      <path d="M7 2h1" />
-      <path d="M22 22l-5-10-5 10" />
-      <path d="M14 18h6" />
-    </svg>`;
-    
-    button.style.cssText = `
-      position: absolute;
-      top: ${rect.top + window.scrollY - 35}px;
-      left: ${rect.left + window.scrollX + rect.width / 2 - 15}px;
-      width: 30px;
-      height: 30px;
-      background: #4285f4;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      z-index: 10000;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-      color: white;
-      transition: all 0.2s ease;
-    `;
-    
-    button.addEventListener("click", () => this.translateSelectedText(text));
-    button.addEventListener("mouseenter", () => button.style.transform = "scale(1.1)");
-    button.addEventListener("mouseleave", () => button.style.transform = "scale(1)");
-    
-    document.body.appendChild(button);
-  }
-
-  hideTranslateButton() {
-    const button = document.getElementById("translate-button");
-    if (button) button.remove();
-  }
-
-  async translateSelectedText(text) {
-    this.hideTranslateButton();
-    try {
-      const result = await this.requestTranslation(
-        text,
-        "auto",
-        this.settings.defaultTargetLanguage
-      );
-      
-      if (result.success) {
-        const selection = window.getSelection();
-        const rect = selection.rangeCount > 0
-          ? selection.getRangeAt(0).getBoundingClientRect()
-          : { top: 100, left: 100, bottom: 120, width: 0 };
-        
-        this.showTranslationPopup(text, result.result, rect);
-      }
-    } catch (error) {
-      this.showError("Translation failed. Please try again.");
-    }
-  }
-
-  createTranslationPopup() {
-    if (this.translationPopup) return;
-    
-    this.translationPopup = document.createElement("div");
-    this.translationPopup.id = "translation-popup";
-    this.translationPopup.style.cssText = `
-      position: absolute;
-      background: white;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 16px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-      z-index: 10001;
-      max-width: 300px;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      font-size: 14px;
-      line-height: 1.4;
-      display: none;
-    `;
-    
-    document.body.appendChild(this.translationPopup);
-  }
-
-  showTranslationPopup(originalText, result, rect) {
-    if (!this.translationPopup) return;
-    
-    const confidence = Math.round(result.confidence * 100);
-    const detectedLang = this.getLanguageName(result.detected);
-    const targetLang = this.getLanguageName(this.settings.defaultTargetLanguage);
-    
-    this.translationPopup.innerHTML = `
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-        <span style="font-size: 12px; color: #666;">
-          ${detectedLang} → ${targetLang}
-        </span>
-        <button id="close-popup" style="background: none; border: none; font-size: 16px; cursor: pointer; color: #666;">×</button>
-      </div>
-      
-      <div style="margin-bottom: 8px;">
-        <div style="font-size: 12px; color: #666; margin-bottom: 4px;">Original:</div>
-        <div style="padding: 4px; background: #f5f5f5; border-radius: 4px; font-size: 13px;">
-          ${this.escapeHtml(originalText)}
-        </div>
-      </div>
-      
-      <div style="margin-bottom: 8px;">
-        <div style="font-size: 12px; color: #666; margin-bottom: 4px;">Translation:</div>
-        <div style="padding: 4px; background: #e8f4fd; border-radius: 4px; font-size: 13px; font-weight: 500;">
-          ${this.escapeHtml(result.translation)}
-        </div>
-      </div>
-      
-      ${this.settings.showConfidence ? `
-        <div style="font-size: 11px; color: #666; margin-bottom: 8px;">
-          Confidence: ${confidence}%
-        </div>
-      ` : ""}
-      
-      <div style="display: flex; gap: 8px;">
-        <button id="copy-translation" style="flex: 1; padding: 6px 12px; background: #4285f4; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">
-          Copy
-        </button>
-        <button id="speak-translation" style="flex: 1; padding: 6px 12px; background: #34a853; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">
-          Speak
-        </button>
-      </div>
-      
-      <div style="margin-top: 8px;">
-        <button id="add-to-dictionary" style="width: 100%; padding: 6px 12px; background: #fbbc04; color: #333; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">
-          Add to Dictionary
-        </button>
-      </div>
-    `;
-    
-    const popupRect = this.translationPopup.getBoundingClientRect();
-    let top = rect.bottom + window.scrollY + 10;
-    let left = rect.left + window.scrollX;
-    
-    if (left + 300 > window.innerWidth) left = window.innerWidth - 310;
-    if (top + popupRect.height > window.innerHeight + window.scrollY) {
-      top = rect.top + window.scrollY - popupRect.height - 10;
-    }
-    
-    this.translationPopup.style.top = `${top}px`;
-    this.translationPopup.style.left = `${left}px`;
-    this.translationPopup.style.display = "block";
-    
-    document.getElementById("close-popup").addEventListener("click", () => this.hideTranslationPopup());
-    document.getElementById("copy-translation").addEventListener("click", () => this.copyToClipboard(result.translation));
-    document.getElementById("speak-translation").addEventListener("click", () => this.speakText(result.translation));
-    document.getElementById("add-to-dictionary").addEventListener("click", () => 
-      this.addToDictionary(originalText, result.translation, result.detected, this.settings.defaultTargetLanguage)
-    );
-    
-    setTimeout(() => {
-      document.addEventListener("click", this.handleOutsideClick.bind(this), { once: true });
-    }, 100);
-  }
-
-  hideTranslationPopup() {
-    if (this.translationPopup) this.translationPopup.style.display = "none";
-  }
-
-  handleOutsideClick(event) {
-    if (this.translationPopup && !this.translationPopup.contains(event.target)) {
-      this.hideTranslationPopup();
-    }
-  }
-
-  async handleQuickTranslate() {
-    const selectedText = window.getSelection().toString().trim();
-    if (selectedText) await this.translateSelectedText(selectedText);
-    else this.showError("Please select text to translate");
-  }
-
-  async handleExtensionMessage(data) {
-    if (data.type === "SHOW_TRANSLATION_POPUP") {
-      const result = await this.requestTranslation(data.text, "auto", data.toLang);
-      if (result.success) {
-        const selection = window.getSelection();
-        const rect = selection.rangeCount > 0
-          ? selection.getRangeAt(0).getBoundingClientRect()
-          : { top: 100, left: 100, bottom: 120, width: 0 };
-        this.showTranslationPopup(data.text, result.result, rect);
-      }
-    } else if (data.type === "TRANSLATE_PAGE_REQUEST") {
-      this.translatePage();
-    }
-  }
-
-  async requestTranslation(text, fromLang, toLang) {
+  async loadSettings() {
     return new Promise((resolve) => {
-      chrome.runtime.sendMessage(
-        {
-          action: "translate",
-          text: text,
-          fromLang: fromLang,
-          toLang: toLang,
-        },
-        resolve
-      );
-    });
-  }
-
-  async getSettings() {
-    return new Promise((resolve) => {
-      chrome.runtime.sendMessage({ action: "getSettings" }, (response) => {
-        resolve(response.success ? response.settings : {});
+      chrome.storage.sync.get('settings', (result) => {
+        this.settings = result.settings || {
+          autoTranslate: false,
+          showFloatingBtn: true,
+          saveHistory: true,
+          defaultTargetLang: 'en'
+        };
+        resolve();
       });
     });
   }
 
-  async copyToClipboard(text) {
-    try {
-      await navigator.clipboard.writeText(text);
-      this.showNotification("Copied to clipboard!");
-    } catch (error) {
-      this.showError("Failed to copy text");
+  createUIElements() {
+    // Create floating translation button
+    this.floatingButton = document.createElement('div');
+    this.floatingButton.id = 'pure-translator-floating-btn';
+    this.floatingButton.innerHTML = '🌐';
+    this.floatingButton.style.display = 'none';
+    document.body.appendChild(this.floatingButton);
+
+    // Create translation tooltip
+    this.tooltip = document.createElement('div');
+    this.tooltip.id = 'pure-translator-tooltip';
+    this.tooltip.innerHTML = `
+      <div class="tooltip-header">
+        <span class="tooltip-title">Translation</span>
+        <button class="tooltip-close">×</button>
+      </div>
+      <div class="tooltip-content">
+        <div class="original-text"></div>
+        <div class="translation-arrow">↓</div>
+        <div class="translated-text"></div>
+        <div class="language-info"></div>
+      </div>
+      <div class="tooltip-actions">
+        <button class="copy-btn">Copy</button>
+        <button class="speak-btn">🔊</button>
+        <button class="save-btn">💾</button>
+      </div>
+    `;
+    this.tooltip.style.display = 'none';
+    document.body.appendChild(this.tooltip);
+
+    // Create page translation controls
+    this.pageControls = document.createElement('div');
+    this.pageControls.id = 'pure-translator-page-controls';
+    this.pageControls.innerHTML = `
+      <div class="page-controls-header">
+        <span>Page Translation</span>
+        <button class="close-page-controls">×</button>
+      </div>
+      <div class="page-controls-content">
+        <select class="source-language">
+          <option value="auto">Auto-detect</option>
+        </select>
+        <span class="arrow">→</span>
+        <select class="target-language">
+          <option value="en">English</option>
+        </select>
+        <button class="translate-page-btn">Translate Page</button>
+        <button class="restore-page-btn" style="display:none;">Restore Original</button>
+      </div>
+      <div class="translation-progress" style="display:none;">
+        <div class="progress-bar"></div>
+        <span class="progress-text">Translating...</span>
+      </div>
+    `;
+    this.pageControls.style.display = 'none';
+    document.body.appendChild(this.pageControls);
+
+    // Create notification container
+    this.notificationContainer = document.createElement('div');
+    this.notificationContainer.id = 'pure-translator-notifications';
+    document.body.appendChild(this.notificationContainer);
+  }
+
+  injectStyles() {
+    // Styles are injected from content.css
+    // Additional dynamic styles can be added here if needed
+  }
+
+  setupEventListeners() {
+    // Text selection handling
+    document.addEventListener('mouseup', (e) => {
+      if (this.settings.showFloatingBtn) {
+        setTimeout(() => this.handleTextSelection(e), 10);
+      }
+    });
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.shiftKey && e.key === 'T') {
+        e.preventDefault();
+        this.togglePageTranslation();
+      }
+      
+      if (e.key === 'Escape') {
+        this.hideAllUI();
+      }
+    });
+
+    // Floating button click
+    this.floatingButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.handleFloatingButtonClick();
+    });
+
+    // Tooltip events
+    this.tooltip.querySelector('.tooltip-close').addEventListener('click', () => {
+      this.hideTooltip();
+    });
+    
+    this.tooltip.querySelector('.copy-btn').addEventListener('click', () => {
+      this.copyTranslation();
+    });
+    
+    this.tooltip.querySelector('.speak-btn').addEventListener('click', () => {
+      this.speakTranslation();
+    });
+    
+    this.tooltip.querySelector('.save-btn').addEventListener('click', () => {
+      this.saveTranslation();
+    });
+
+    // Page controls events
+    this.pageControls.querySelector('.close-page-controls').addEventListener('click', () => {
+      this.hidePageControls();
+    });
+    
+    this.pageControls.querySelector('.translate-page-btn').addEventListener('click', () => {
+      this.translatePage();
+    });
+    
+    this.pageControls.querySelector('.restore-page-btn').addEventListener('click', () => {
+      this.restoreOriginalPage();
+    });
+
+    // Message listener from background script
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+      if (message.action === 'showTranslation') {
+        this.showTranslation(
+          message.originalText,
+          message.fromLang,
+          message.toLang
+        );
+      }
+      sendResponse({ received: true });
+    });
+  }
+
+  handleTextSelection(e) {
+    const selection = window.getSelection();
+    const selectedText = selection.toString().trim();
+
+    if (selectedText.length > 0 && selectedText.length < 500) {
+      const range = selection.getRangeAt(0);
+      const rect = range.getBoundingClientRect();
+      
+      this.showFloatingButton(rect, selectedText);
+    } else {
+      this.hideFloatingButton();
     }
   }
 
-  speakText(text) {
-    if ("speechSynthesis" in window) {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 0.8;
-      utterance.pitch = 1;
+  showFloatingButton(rect, selectedText) {
+    this.floatingButton.style.display = 'block';
+    this.floatingButton.style.left = (rect.right + window.scrollX) + 'px';
+    this.floatingButton.style.top = (rect.top + window.scrollY - 30) + 'px';
+    this.floatingButton.selectedText = selectedText;
+  }
+
+  hideFloatingButton() {
+    this.floatingButton.style.display = 'none';
+  }
+
+  async handleFloatingButtonClick() {
+    const selectedText = this.floatingButton.selectedText;
+    if (!selectedText) return;
+
+    this.hideFloatingButton();
+    
+    try {
+      // Detect language
+      const detectedLang = await this.detectLanguage(selectedText);
+      const targetLang = this.settings.defaultTargetLang || 'en';
+      
+      // Show translation
+      this.showTranslation(selectedText, detectedLang, targetLang);
+    } catch (error) {
+      this.showError('Translation error: ' + error.message);
+    }
+  }
+
+  async showTranslation(originalText, fromLang, toLang) {
+    try {
+      const response = await chrome.runtime.sendMessage({
+        action: 'translate',
+        text: originalText,
+        fromLang: fromLang,
+        toLang: toLang
+      });
+
+      if (response.success) {
+        this.showTooltip(originalText, response.translation, fromLang, toLang);
+      } else {
+        this.showError('Translation failed: ' + response.error);
+      }
+    } catch (error) {
+      this.showError('Translation error: ' + error.message);
+    }
+  }
+
+  showTooltip(originalText, translatedText, fromLang, toLang) {
+    const tooltip = this.tooltip;
+    
+    tooltip.querySelector('.original-text').textContent = originalText;
+    tooltip.querySelector('.translated-text').textContent = translatedText;
+    tooltip.querySelector('.language-info').textContent = `${this.getLanguageName(fromLang)} → ${this.getLanguageName(toLang)}`;
+    
+    // Position tooltip near mouse or selection
+    const selection = window.getSelection();
+    let x = 0, y = 0;
+    
+    if (selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+      const rect = range.getBoundingClientRect();
+      x = rect.right + window.scrollX + 10;
+      y = rect.top + window.scrollY;
+    } else {
+      x = window.innerWidth / 2;
+      y = window.innerHeight / 2;
+    }
+    
+    // Adjust position if it goes off screen
+    const tooltipWidth = 300;
+    if (x + tooltipWidth > window.innerWidth) {
+      x = window.innerWidth - tooltipWidth - 10;
+    }
+    
+    tooltip.style.left = x + 'px';
+    tooltip.style.top = y + 'px';
+    tooltip.style.display = 'block';
+    
+    // Auto-hide after 10 seconds
+    setTimeout(() => {
+      if (tooltip.style.display === 'block') {
+        this.hideTooltip();
+      }
+    }, 10000);
+  }
+
+  hideTooltip() {
+    this.tooltip.style.display = 'none';
+  }
+
+  async copyTranslation() {
+    const translatedText = this.tooltip.querySelector('.translated-text').textContent;
+    try {
+      await navigator.clipboard.writeText(translatedText);
+      this.showNotification('Translation copied to clipboard!');
+    } catch (error) {
+      this.showError('Failed to copy translation');
+    }
+  }
+
+  speakTranslation() {
+    const translatedText = this.tooltip.querySelector('.translated-text').textContent;
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(translatedText);
+      utterance.rate = 0.9;
       speechSynthesis.speak(utterance);
     } else {
-      this.showError("Speech synthesis not supported");
+      this.showError('Text-to-speech not supported');
     }
+  }
+
+  async saveTranslation() {
+    const originalText = this.tooltip.querySelector('.original-text').textContent;
+    const translatedText = this.tooltip.querySelector('.translated-text').textContent;
+    const languageInfo = this.tooltip.querySelector('.language-info').textContent;
+    const [fromLang, toLang] = languageInfo.split(' → ').map(lang => lang.trim().toLowerCase());
+    
+    try {
+      const response = await chrome.runtime.sendMessage({
+        action: 'saveTranslation',
+        original: originalText,
+        translated: translatedText,
+        fromLang: fromLang,
+        toLang: toLang,
+        url: window.location.href
+      });
+      
+      if (response.success) {
+        this.showNotification('Translation saved to history!');
+      } else {
+        this.showError('Failed to save translation');
+      }
+    } catch (error) {
+      this.showError('Error saving translation: ' + error.message);
+    }
+  }
+
+  showPageControls() {
+    this.populateLanguageSelects();
+    this.pageControls.style.display = 'block';
+  }
+
+  hidePageControls() {
+    this.pageControls.style.display = 'none';
+  }
+
+  togglePageTranslation() {
+    if (this.pageControls.style.display === 'none') {
+      this.showPageControls();
+    } else {
+      this.hidePageControls();
+    }
+  }
+
+  async populateLanguageSelects() {
+    try {
+      const response = await chrome.runtime.sendMessage({ action: 'getLanguages' });
+      const languages = response.languages;
+      
+      const sourceSelect = this.pageControls.querySelector('.source-language');
+      const targetSelect = this.pageControls.querySelector('.target-language');
+      
+      // Clear existing options (except auto-detect for source)
+      sourceSelect.innerHTML = '<option value="auto">Auto-detect</option>';
+      targetSelect.innerHTML = '';
+      
+      // Populate language options
+      for (const [code, name] of Object.entries(languages)) {
+        sourceSelect.innerHTML += `<option value="${code}">${name}</option>`;
+        targetSelect.innerHTML += `<option value="${code}">${name}</option>`;
+      }
+      
+      // Set default target to user preference
+      targetSelect.value = this.settings.defaultTargetLang || 'en';
+    } catch (error) {
+      console.error('Failed to load languages:', error);
+      this.showError('Failed to load languages');
+    }
+  }
+
+  async translatePage() {
+    const sourceSelect = this.pageControls.querySelector('.source-language');
+    const targetSelect = this.pageControls.querySelector('.target-language');
+    const progressDiv = this.pageControls.querySelector('.translation-progress');
+    const progressBar = progressDiv.querySelector('.progress-bar');
+    const progressText = progressDiv.querySelector('.progress-text');
+    
+    const sourceLang = sourceSelect.value;
+    const targetLang = targetSelect.value;
+    
+    if (sourceLang === targetLang) {
+      this.showError('Source and target languages cannot be the same');
+      return;
+    }
+    
+    // Show progress
+    progressDiv.style.display = 'block';
+    progressBar.style.width = '0%';
+    
+    try {
+      // Get all text nodes
+      const textNodes = this.getAllTextNodes();
+      const totalNodes = textNodes.length;
+      let processedNodes = 0;
+      
+      // Store original texts
+      if (this.originalTexts.size === 0) {
+        textNodes.forEach((node, index) => {
+          this.originalTexts.set(index, node.textContent);
+        });
+      }
+      
+      // Translate each text node
+      for (let i = 0; i < textNodes.length; i++) {
+        const node = textNodes[i];
+        const originalText = node.textContent.trim();
+        
+        if (originalText.length > 0 && originalText.length < 1000) {
+          try {
+            const detectedLang = sourceLang === 'auto' ? 
+              await this.detectLanguage(originalText) : sourceLang;
+            
+            const response = await chrome.runtime.sendMessage({
+              action: 'translate',
+              text: originalText,
+              fromLang: detectedLang,
+              toLang: targetLang
+            });
+            
+            if (response.success) {
+              node.textContent = response.translation;
+              this.translatedTexts.set(i, response.translation);
+            }
+          } catch (error) {
+            console.error('Translation failed for node:', error);
+          }
+        }
+        
+        processedNodes++;
+        const progress = (processedNodes / totalNodes) * 100;
+        progressBar.style.width = progress + '%';
+        progressText.textContent = `Translating... ${Math.round(progress)}%`;
+        
+        // Small delay to prevent overwhelming the system
+        if (i % 10 === 0) {
+          await new Promise(resolve => setTimeout(resolve, 50));
+        }
+      }
+      
+      // Show restore button
+      this.pageControls.querySelector('.restore-page-btn').style.display = 'inline-block';
+      this.showNotification('Page translated successfully!');
+      
+    } catch (error) {
+      this.showError('Page translation failed: ' + error.message);
+    } finally {
+      progressDiv.style.display = 'none';
+    }
+  }
+
+  getAllTextNodes() {
+    const walker = document.createTreeWalker(
+      document.body,
+      NodeFilter.SHOW_TEXT,
+      {
+        acceptNode: function(node) {
+          // Skip script, style, and other non-visible elements
+          const parent = node.parentElement;
+          if (!parent) return NodeFilter.FILTER_REJECT;
+          
+          const tagName = parent.tagName.toLowerCase();
+          if (['script', 'style', 'noscript', 'textarea', 'input'].includes(tagName)) {
+            return NodeFilter.FILTER_REJECT;
+          }
+          
+          // Skip our own extension elements
+          if (parent.id && parent.id.startsWith('pure-translator-')) {
+            return NodeFilter.FILTER_REJECT;
+          }
+          
+          const text = node.textContent.trim();
+          return text.length > 0 ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+        }
+      }
+    );
+    
+    const textNodes = [];
+    let node;
+    while (node = walker.nextNode()) {
+      textNodes.push(node);
+    }
+    
+    return textNodes;
+  }
+
+  restoreOriginalPage() {
+    const textNodes = this.getAllTextNodes();
+    
+    textNodes.forEach((node, index) => {
+      if (this.originalTexts.has(index)) {
+        node.textContent = this.originalTexts.get(index);
+      }
+    });
+    
+    this.originalTexts.clear();
+    this.translatedTexts.clear();
+    this.pageControls.querySelector('.restore-page-btn').style.display = 'none';
+    this.showNotification('Original page restored!');
+  }
+
+  async detectLanguage(text) {
+    const response = await chrome.runtime.sendMessage({
+      action: 'detectLanguage',
+      text: text
+    });
+    return response.language;
   }
 
   getLanguageName(code) {
-    const languages = {
-      en: "English",
-      es: "Spanish",
-      fr: "French",
-      de: "German",
-      auto: "Auto-detect",
+    const languageNames = {
+      'en': 'English',
+      'es': 'Spanish',
+      'fr': 'French',
+      'de': 'German',
+      'it': 'Italian',
+      'pt': 'Portuguese',
+      'ru': 'Russian',
+      'ja': 'Japanese',
+      'ko': 'Korean',
+      'zh': 'Chinese',
+      'ar': 'Arabic',
+      'hi': 'Hindi',
+      'nl': 'Dutch',
+      'sv': 'Swedish',
+      'da': 'Danish',
+      'no': 'Norwegian',
+      'fi': 'Finnish',
+      'pl': 'Polish',
+      'cs': 'Czech',
+      'hu': 'Hungarian',
+      'auto': 'Auto-detect'
     };
-    return languages[code] || code;
-  }
-
-  escapeHtml(text) {
-    const div = document.createElement("div");
-    div.textContent = text;
-    return div.innerHTML;
-  }
-
-  showNotification(message) {
-    const notification = document.createElement("div");
-    notification.textContent = message;
-    notification.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: #4caf50;
-      color: white;
-      padding: 10px 16px;
-      border-radius: 4px;
-      z-index: 10004;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      font-size: 14px;
-    `;
     
-    document.body.appendChild(notification);
-    setTimeout(() => notification.remove(), 3000);
+    return languageNames[code] || code.toUpperCase();
+  }
+
+  showNotification(message, isError = false) {
+    const notification = document.createElement('div');
+    notification.className = `pure-translator-notification ${isError ? 'error' : 'success'}`;
+    notification.textContent = message;
+    
+    this.notificationContainer.appendChild(notification);
+    
+    setTimeout(() => {
+      notification.classList.add('fade-out');
+      setTimeout(() => {
+        notification.remove();
+      }, 300);
+    }, 3000);
   }
 
   showError(message) {
-    const error = document.createElement("div");
-    error.textContent = message;
-    error.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: #f44336;
-      color: white;
-      padding: 10px 16px;
-      border-radius: 4px;
-      z-index: 10004;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      font-size: 14px;
-    `;
-    
-    document.body.appendChild(error);
-    setTimeout(() => error.remove(), 3000);
+    this.showNotification(message, true);
+  }
+
+  hideAllUI() {
+    this.hideFloatingButton();
+    this.hideTooltip();
+    this.hidePageControls();
   }
 }
 
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", () => new TranslationContentScript());
-} else {
-  new TranslationContentScript();
+// Initialize translation UI when page loads
+document.addEventListener('DOMContentLoaded', () => {
+  new TranslationUI();
+});
+
+// Also initialize if page is already loaded
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+  new TranslationUI();
 }

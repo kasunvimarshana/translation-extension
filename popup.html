@@ -1,324 +1,151 @@
-<!-- popup.html -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pure Translator</title>
-  <style>
-    :root {
-      --primary-color: #4285f4;
-      --secondary-color: #34a853;
-      --accent-color: #fbbc04;
-      --error-color: #ea4335;
-      --background: #ffffff;
-      --text-primary: #202124;
-      --text-secondary: #5f6368;
-      --border: #dadce0;
-      --card-bg: #f8f9fa;
-    }
-
-    [data-theme="dark"] {
-      --primary-color: #8ab4f8;
-      --secondary-color: #81c995;
-      --accent-color: #fdd663;
-      --error-color: #f28b82;
-      --background: #202124;
-      --text-primary: #e8eaed;
-      --text-secondary: #9aa0a6;
-      --border: #5f6368;
-      --card-bg: #292a2d;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      width: 400px;
-      min-height: 500px;
-      font-family: 'Segoe UI', Roboto, Oxygen, sans-serif;
-      background: var(--background);
-      color: var(--text-primary);
-      padding: 16px;
-    }
-
-    .header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 20px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .logo-icon {
-      font-size: 28px;
-      color: var(--primary-color);
-    }
-
-    .logo-text {
-      font-size: 20px;
-      font-weight: 600;
-    }
-
-    .section {
-      background: var(--card-bg);
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 16px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    }
-
-    .section-title {
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 16px;
-      color: var(--text-primary);
-    }
-
-    .language-selector {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-
-    select {
-      flex: 1;
-      padding: 10px 12px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      background: var(--background);
-      color: var(--text-primary);
-      font-size: 14px;
-    }
-
-    .swap-btn {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .swap-btn:hover {
-      background: var(--background);
-    }
-
-    textarea {
-      width: 100%;
-      min-height: 100px;
-      padding: 12px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      resize: vertical;
-      font-family: inherit;
-      font-size: 14px;
-      background: var(--background);
-      color: var(--text-primary);
-      margin-bottom: 12px;
-    }
-
-    textarea:focus {
-      outline: none;
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
-    }
-
-    .translate-btn {
-      width: 100%;
-      padding: 12px;
-      background: var(--primary-color);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 15px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-
-    .translate-btn:hover {
-      background: #3367d6;
-    }
-
-    .result-container {
-      margin-top: 16px;
-      padding: 16px;
-      background: var(--card-bg);
-      border-radius: 8px;
-      min-height: 120px;
-    }
-
-    .result-text {
-      font-size: 15px;
-      line-height: 1.5;
-      color: var(--text-primary);
-      margin-bottom: 16px;
-    }
-
-    .result-meta {
-      display: flex;
-      justify-content: space-between;
-      font-size: 13px;
-      color: var(--text-secondary);
-    }
-
-    .action-buttons {
-      display: flex;
-      gap: 8px;
-      margin-top: 12px;
-    }
-
-    .action-btn {
-      flex: 1;
-      padding: 8px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      background: var(--background);
-      color: var(--text-primary);
-      border: 1px solid var(--border);
-    }
-
-    .settings-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .settings-item:last-child {
-      border-bottom: none;
-    }
-
-    .theme-toggle {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      width: 50px;
-      height: 26px;
-      cursor: pointer;
-    }
-
-    .toggle-handle {
-      position: absolute;
-      top: 2px;
-      left: 2px;
-      width: 22px;
-      height: 22px;
-      background: var(--primary-color);
-      border-radius: 50%;
-      transition: transform 0.3s;
-    }
-
-    [data-theme="dark"] .toggle-handle {
-      transform: translateX(24px);
-    }
-
-    .footer {
-      margin-top: 20px;
-      padding-top: 16px;
-      border-top: 1px solid var(--border);
-      text-align: center;
-      font-size: 13px;
-      color: var(--text-secondary);
-    }
-  </style>
+  <link rel="stylesheet" href="popup.css">
 </head>
 <body>
   <div class="header">
     <div class="logo">
-      <div class="logo-icon">🌐</div>
-      <div class="logo-text">Pure Translator</div>
+      <span class="logo-icon">🌐</span>
+      <h1>Pure Translator</h1>
     </div>
-    <div class="theme-toggle" id="theme-toggle">
-      <div class="toggle-handle"></div>
-    </div>
+    <div class="version">v1.0.0</div>
   </div>
 
-  <div class="section">
-    <div class="section-title">Quick Translate</div>
-    <div class="language-selector">
-      <select id="source-lang">
-        <option value="auto">Auto-detect</option>
-      </select>
-      <button class="swap-btn" id="swap-langs">⇄</button>
-      <select id="target-lang">
-        <option value="en">English</option>
-      </select>
-    </div>
-    
-    <textarea id="source-text" placeholder="Enter text to translate..."></textarea>
-    
-    <button class="translate-btn" id="translate-btn">Translate</button>
-    
-    <div class="result-container">
-      <div class="result-text" id="result-text">Translation will appear here</div>
-      <div class="result-meta">
-        <span id="confidence">Confidence: 0%</span>
-        <span id="detected-lang">Detected: Auto</span>
+  <div class="main-content">
+    <!-- Quick Translation Section -->
+    <div class="section">
+      <h2>Quick Translation</h2>
+      <div class="translation-container">
+        <div class="language-selector">
+          <select id="source-lang" class="lang-select">
+            <option value="auto">Auto-detect</option>
+          </select>
+          <button id="swap-languages" class="swap-btn" title="Swap languages">⇄</button>
+          <select id="target-lang" class="lang-select">
+            <option value="en">English</option>
+          </select>
+        </div>
+        
+        <div class="text-areas">
+          <div class="input-container">
+            <textarea id="source-text" placeholder="Enter text to translate..." maxlength="5000"></textarea>
+            <div class="char-count">
+              <span id="char-count">0</span>/5000
+            </div>
+            <button id="clear-text" class="clear-btn" title="Clear text">✕</button>
+          </div>
+          
+          <div class="translation-result">
+            <div id="translated-text" class="result-text">Translation will appear here...</div>
+            <div class="result-actions">
+              <button id="copy-result" class="action-btn" title="Copy translation">📋</button>
+              <button id="speak-result" class="action-btn" title="Speak translation">🔊</button>
+              <button id="save-translation" class="action-btn" title="Save to history">💾</button>
+            </div>
+          </div>
+        </div>
+        
+        <button id="translate-btn" class="translate-btn">
+          <span class="btn-text">Translate</span>
+          <span class="btn-loader" style="display: none;">⏳</span>
+        </button>
       </div>
-      <div class="action-buttons">
-        <button class="action-btn" id="copy-btn">
-          <span>📋</span> Copy
-        </button>
-        <button class="action-btn" id="speak-btn">
-          <span>🔊</span> Speak
-        </button>
-        <button class="action-btn" id="save-btn">
-          <span>💾</span> Save
-        </button>
+    </div>
+
+    <!-- Page Translation Section -->
+    <div class="section">
+      <h2>Page Translation</h2>
+      <div class="page-translation">
+        <p class="description">Translate the entire current page</p>
+        <div class="page-controls">
+          <button id="translate-page" class="page-btn primary">
+            🌍 Translate Page
+          </button>
+          <button id="restore-page" class="page-btn secondary" style="display: none;">
+            🔄 Restore Original
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- History Section -->
+    <div class="section">
+      <h2>Translation History</h2>
+      <div class="history-container">
+        <div class="history-controls">
+          <button id="clear-history" class="clear-history-btn">Clear All</button>
+          <button id="export-history" class="export-btn">Export</button>
+        </div>
+        <div id="history-list" class="history-list">
+          <div class="no-history">No translations yet</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Statistics Section -->
+    <div class="section">
+      <h2>Statistics</h2>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <span class="stat-number" id="total-translations">0</span>
+          <span class="stat-label">Total Translations</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number" id="languages-used">0</span>
+          <span class="stat-label">Languages Used</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number" id="characters-translated">0</span>
+          <span class="stat-label">Characters Translated</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Section -->
+    <div class="section">
+      <h2>Settings</h2>
+      <div class="settings-container">
+        <div class="setting-item">
+          <label for="auto-translate">
+            <input type="checkbox" id="auto-translate">
+            Auto-translate selected text
+          </label>
+        </div>
+        <div class="setting-item">
+          <label for="show-floating-btn">
+            <input type="checkbox" id="show-floating-btn" checked>
+            Show floating translate button
+          </label>
+        </div>
+        <div class="setting-item">
+          <label for="save-history">
+            <input type="checkbox" id="save-history" checked>
+            Save translation history
+          </label>
+        </div>
+        <div class="setting-item">
+          <label for="default-target-lang">Default target language:</label>
+          <select id="default-target-lang" class="lang-select small">
+            <option value="en">English</option>
+          </select>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="section">
-    <div class="section-title">Page Translation</div>
-    <button class="translate-btn" id="translate-page">Translate Current Page</button>
-  </div>
-
-  <div class="section">
-    <div class="section-title">Settings</div>
-    <div class="settings-item">
-      <label for="auto-detect">Auto-detect language</label>
-      <input type="checkbox" id="auto-detect" checked>
-    </div>
-    <div class="settings-item">
-      <label for="show-confidence">Show confidence level</label>
-      <input type="checkbox" id="show-confidence" checked>
-    </div>
-    <div class="settings-item">
-      <label for="default-lang">Default target language:</label>
-      <select id="default-lang" class="small-select">
-        <option value="en">English</option>
-      </select>
-    </div>
-  </div>
-
+  <!-- Footer -->
   <div class="footer">
-    Pure Translator v1.0 · No external services used
+    <div class="shortcuts">
+      <span class="shortcut">Ctrl+Shift+T</span> Page Translation
+    </div>
+    <div class="links">
+      <a href="#" id="help-link">Help</a>
+      <a href="#" id="feedback-link">Feedback</a>
+    </div>
   </div>
 
   <script src="popup.js"></script>
