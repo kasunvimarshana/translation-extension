@@ -1,4 +1,4 @@
-"# translation-extension" 
+"# translation-extension"
 
 translation-extension/
 ├─ icons/

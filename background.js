@@ -1,4 +1,7 @@
-import { translationService } from './services/translationService.js';
+import { TranslationService } from './services/translationService.js';
+import { API_KEY } from './config.js';
+
+const translationService = new TranslationService(API_KEY, 'es');
 
 // Create the context menu
 chrome.runtime.onInstalled.addListener(() => {
@@ -12,13 +15,14 @@ chrome.runtime.onInstalled.addListener(() => {
 // // Handle context menu click
 // chrome.contextMenus.onClicked.addListener((info, tab) => {
 //   if (info.menuItemId === "translate" && info.selectionText) {
-//     const translatedText = translationService.translate(info.selectionText);
-//     chrome.scripting.executeScript({
-//       target: { tabId: tab.id },
-//       func: (translation) => {
-//         chrome.runtime.sendMessage({ action: "showTranslation", translation });
-//       },
-//       args: [translatedText]
+//     translationService.translate(info.selectionText).then(translated => {
+//       chrome.scripting.executeScript({
+//         target: { tabId: tab.id },
+//         func: (translation) => {
+//           chrome.runtime.sendMessage({ action: "showTranslation", translation });
+//         },
+//         args: [translated]
+//       });
 //     });
 //   }
 // });
@@ -38,10 +42,11 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 
 chrome.runtime.onMessage.addListener((message, sender) => {
   if (message.action === "translate") {
-    const translated = translationService.translate(message.text);
-    chrome.tabs.sendMessage(sender.tab.id, {
-      action: "showTranslation",
-      translation: translated
+    translationService.translate(message.text).then(translated => {
+      chrome.tabs.sendMessage(sender.tab.id, {
+        action: "showTranslation",
+        translation: translated
+      });
     });
   }
 });
