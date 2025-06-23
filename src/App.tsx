@@ -16,31 +16,13 @@ import {
   Star,
   Users,
   Smartphone,
-  Monitor,
-  Brain,
-  Lock,
-  Cpu,
-  Database,
-  Layers,
-  Target,
-  Mic,
-  Volume2,
-  Eye,
-  MousePointer,
-  Keyboard,
-  RotateCcw,
-  Save,
-  BarChart3,
-  Palette,
-  Moon,
-  Sun
+  Monitor
 } from 'lucide-react';
 
 interface FeatureCardProps {
   icon: React.ReactNode;
   title: string;
   description: string;
-  gradient?: string;
 }
 
 interface StepProps {
@@ -50,18 +32,11 @@ interface StepProps {
   completed?: boolean;
 }
 
-interface TechStackItemProps {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-}
-
 function App() {
   const [activeTab, setActiveTab] = useState('overview');
   const [demoText, setDemoText] = useState('Hello, how are you today?');
   const [translatedText, setTranslatedText] = useState('');
   const [isTranslating, setIsTranslating] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
   const downloadRef = useRef<HTMLDivElement>(null);
 
   // Mock translation function for demo
@@ -73,45 +48,31 @@ function App() {
       'Hello, how are you today?': 'Hola, ¿cómo estás hoy?',
       'Good morning': 'Buenos días',
       'Thank you very much': 'Muchas gracias',
-      'Where is the library?': '¿Dónde está la biblioteca?',
-      'I love programming': 'Me encanta programar',
-      'This is amazing': 'Esto es increíble'
+      'Where is the library?': '¿Dónde está la biblioteca?'
     };
     
     setTranslatedText(translations[demoText] || 'Hola, ¿cómo estás hoy?');
     setIsTranslating(false);
   };
 
-  const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, description, gradient = "from-blue-500 to-purple-600" }) => (
-    <div className={`bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 hover:border-blue-200 dark:hover:border-blue-400 group ${darkMode ? 'dark' : ''}`}>
-      <div className={`bg-gradient-to-r ${gradient} p-3 rounded-lg w-fit mb-4 group-hover:scale-110 transition-transform duration-300`}>
-        <div className="text-white">{icon}</div>
-      </div>
-      <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">{title}</h3>
-      <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">{description}</p>
+  const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, description }) => (
+    <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-blue-200">
+      <div className="text-blue-600 mb-4">{icon}</div>
+      <h3 className="text-lg font-semibold text-gray-800 mb-2">{title}</h3>
+      <p className="text-gray-600 text-sm leading-relaxed">{description}</p>
     </div>
   );
 
   const Step: React.FC<StepProps> = ({ number, title, description, completed = false }) => (
-    <div className={`flex items-start space-x-4 p-4 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${darkMode ? 'dark' : ''}`}>
+    <div className="flex items-start space-x-4 p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
       <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
         completed ? 'bg-green-500 text-white' : 'bg-blue-500 text-white'
       }`}>
         {completed ? <CheckCircle size={16} /> : number}
       </div>
       <div>
-        <h4 className="font-semibold text-gray-800 dark:text-gray-100">{title}</h4>
-        <p className="text-gray-600 dark:text-gray-300 text-sm mt-1">{description}</p>
-      </div>
-    </div>
-  );
-
-  const TechStackItem: React.FC<TechStackItemProps> = ({ icon, title, description }) => (
-    <div className={`flex items-center space-x-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${darkMode ? 'dark' : ''}`}>
-      <div className="text-blue-600 dark:text-blue-400">{icon}</div>
-      <div>
-        <h4 className="font-medium text-gray-800 dark:text-gray-100">{title}</h4>
-        <p className="text-sm text-gray-600 dark:text-gray-300">{description}</p>
+        <h4 className="font-semibold text-gray-800">{title}</h4>
+        <p className="text-gray-600 text-sm mt-1">{description}</p>
       </div>
     </div>
   );
@@ -129,6 +90,7 @@ function App() {
   };
 
   const downloadAllFiles = () => {
+    // Create a ZIP-like structure by downloading all files
     const files = [
       { name: 'manifest.json', content: manifestContent },
       { name: 'background.js', content: backgroundContent },
@@ -137,21 +99,18 @@ function App() {
       { name: 'popup.html', content: popupHTML },
       { name: 'popup.css', content: popupCSS },
       { name: 'popup.js', content: popupJS },
-      { name: 'translation-engine.js', content: translationEngineContent },
-      { name: 'README.md', content: readmeContent },
-      { name: 'INSTALLATION.md', content: installationContent },
-      { name: 'USAGE_GUIDE.md', content: usageGuideContent }
+      { name: 'README.md', content: readmeContent }
     ];
 
-    files.forEach((file, index) => {
-      setTimeout(() => handleDownload(file.name, file.content), index * 200);
+    files.forEach(file => {
+      setTimeout(() => handleDownload(file.name, file.content), 100);
     });
   };
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${darkMode ? 'dark bg-gray-900' : 'bg-gradient-to-br from-blue-50 via-white to-purple-50'}`}>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       {/* Header */}
-      <header className={`backdrop-blur-sm border-b sticky top-0 z-40 transition-colors duration-300 ${darkMode ? 'bg-gray-900/80 border-gray-700' : 'bg-white/80 border-gray-200'}`}>
+      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-3">
@@ -159,24 +118,18 @@ function App() {
                 <Globe className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h1 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Pure Translator</h1>
-                <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Custom Browser Extension</p>
+                <h1 className="text-xl font-bold text-gray-900">Pure Translator</h1>
+                <p className="text-xs text-gray-500">Custom Browser Extension</p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <button
-                onClick={() => setDarkMode(!darkMode)}
-                className={`p-2 rounded-lg transition-colors ${darkMode ? 'bg-gray-800 text-yellow-400 hover:bg-gray-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
-              >
-                {darkMode ? <Sun size={20} /> : <Moon size={20} />}
-              </button>
-              <div className="flex items-center space-x-2 bg-green-100 dark:bg-green-900 px-3 py-1 rounded-full">
-                <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
-                <span className="text-sm font-medium text-green-800 dark:text-green-200">Production Ready</span>
+              <div className="flex items-center space-x-2 bg-green-100 px-3 py-1 rounded-full">
+                <CheckCircle className="h-4 w-4 text-green-600" />
+                <span className="text-sm font-medium text-green-800">Production Ready</span>
               </div>
               <button 
                 onClick={downloadAllFiles}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 flex items-center space-x-2 transform hover:scale-105"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2"
               >
                 <Download className="h-4 w-4" />
                 <span>Download Extension</span>
@@ -192,7 +145,6 @@ function App() {
               { id: 'overview', label: 'Overview', icon: <Globe className="h-4 w-4" /> },
               { id: 'demo', label: 'Live Demo', icon: <Play className="h-4 w-4" /> },
               { id: 'features', label: 'Features', icon: <Star className="h-4 w-4" /> },
-              { id: 'architecture', label: 'Architecture', icon: <Layers className="h-4 w-4" /> },
               { id: 'installation', label: 'Installation', icon: <Settings className="h-4 w-4" /> },
               { id: 'files', label: 'Source Files', icon: <Code className="h-4 w-4" /> },
               { id: 'guide', label: 'Usage Guide', icon: <Book className="h-4 w-4" /> }
@@ -202,8 +154,8 @@ function App() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center space-x-2 px-4 py-2 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
                   activeTab === tab.id
-                    ? 'border-blue-600 text-blue-600 dark:text-blue-400'
-                    : `border-transparent ${darkMode ? 'text-gray-400 hover:text-gray-200 hover:border-gray-600' : 'text-gray-500 hover:text-gray-700 hover:border-gray-300'}`
+                    ? 'border-blue-600 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
                 {tab.icon}
@@ -220,17 +172,17 @@ function App() {
           <div className="space-y-12">
             {/* Hero Section */}
             <div className="text-center space-y-6">
-              <div className="inline-flex items-center space-x-2 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-4 py-2 rounded-full text-sm font-medium">
+              <div className="inline-flex items-center space-x-2 bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium">
                 <Zap className="h-4 w-4" />
                 <span>Pure Implementation • No External APIs • Privacy First</span>
               </div>
-              <h1 className={`text-4xl lg:text-6xl font-bold leading-tight ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+              <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 leading-tight">
                 Pure Translator
                 <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
                   Browser Extension
                 </span>
               </h1>
-              <p className={`text-xl max-w-3xl mx-auto leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
                 A production-ready, privacy-focused translation browser extension built from scratch. 
                 Features custom translation engine, offline capabilities, and zero external dependencies.
               </p>
@@ -244,11 +196,7 @@ function App() {
                 </button>
                 <button 
                   onClick={() => setActiveTab('installation')}
-                  className={`px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center space-x-2 ${
-                    darkMode 
-                      ? 'bg-gray-800 hover:bg-gray-700 text-gray-100 border border-gray-600 hover:border-gray-500' 
-                      : 'bg-white hover:bg-gray-50 text-gray-800 border border-gray-200 hover:border-gray-300'
-                  }`}
+                  className="bg-white hover:bg-gray-50 text-gray-800 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 border border-gray-200 hover:border-gray-300 shadow-lg hover:shadow-xl flex items-center space-x-2"
                 >
                   <Download className="h-5 w-5" />
                   <span>Get Started</span>
@@ -259,74 +207,47 @@ function App() {
             {/* Key Highlights */}
             <div className="grid md:grid-cols-3 gap-8">
               <div className="text-center space-y-4">
-                <div className="bg-green-100 dark:bg-green-900 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
-                  <Shield className="h-8 w-8 text-green-600 dark:text-green-400" />
+                <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
+                  <Shield className="h-8 w-8 text-green-600" />
                 </div>
-                <h3 className={`text-xl font-semibold ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>Privacy First</h3>
-                <p className={`${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>No external API calls. All translation happens locally in your browser.</p>
+                <h3 className="text-xl font-semibold text-gray-800">Privacy First</h3>
+                <p className="text-gray-600">No external API calls. All translation happens locally in your browser.</p>
               </div>
               <div className="text-center space-y-4">
-                <div className="bg-blue-100 dark:bg-blue-900 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
-                  <Zap className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
+                  <Zap className="h-8 w-8 text-blue-600" />
                 </div>
-                <h3 className={`text-xl font-semibold ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>Lightning Fast</h3>
-                <p className={`${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Custom-built translation engine optimized for speed and accuracy.</p>
+                <h3 className="text-xl font-semibold text-gray-800">Lightning Fast</h3>
+                <p className="text-gray-600">Custom-built translation engine optimized for speed and accuracy.</p>
               </div>
               <div className="text-center space-y-4">
-                <div className="bg-purple-100 dark:bg-purple-900 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
-                  <Code className="h-8 w-8 text-purple-600 dark:text-purple-400" />
+                <div className="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
+                  <Code className="h-8 w-8 text-purple-600" />
                 </div>
-                <h3 className={`text-xl font-semibold ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>Open Source</h3>
-                <p className={`${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Complete source code available. Customize and extend as needed.</p>
+                <h3 className="text-xl font-semibold text-gray-800">Open Source</h3>
+                <p className="text-gray-600">Complete source code available. Customize and extend as needed.</p>
               </div>
             </div>
 
             {/* Stats */}
-            <div className={`rounded-2xl shadow-xl p-8 border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
+            <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
                 <div>
-                  <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">25+</div>
-                  <div className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Supported Languages</div>
+                  <div className="text-3xl font-bold text-blue-600">20+</div>
+                  <div className="text-gray-600 text-sm mt-1">Supported Languages</div>
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-green-600 dark:text-green-400">100%</div>
-                  <div className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Privacy Protected</div>
+                  <div className="text-3xl font-bold text-green-600">100%</div>
+                  <div className="text-gray-600 text-sm mt-1">Privacy Protected</div>
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">0ms</div>
-                  <div className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>External Latency</div>
+                  <div className="text-3xl font-bold text-purple-600">0ms</div>
+                  <div className="text-gray-600 text-sm mt-1">External Latency</div>
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-orange-600 dark:text-orange-400">3MB</div>
-                  <div className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Total Size</div>
+                  <div className="text-3xl font-bold text-orange-600">5MB</div>
+                  <div className="text-gray-600 text-sm mt-1">Total Size</div>
                 </div>
-              </div>
-            </div>
-
-            {/* Technology Stack */}
-            <div className={`rounded-2xl shadow-xl p-8 border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
-              <h3 className={`text-2xl font-bold mb-6 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Technology Stack</h3>
-              <div className="grid md:grid-cols-2 gap-4">
-                <TechStackItem
-                  icon={<Brain className="h-5 w-5" />}
-                  title="Custom Translation Engine"
-                  description="Built from scratch with linguistic rules and pattern matching"
-                />
-                <TechStackItem
-                  icon={<Lock className="h-5 w-5" />}
-                  title="Manifest V3"
-                  description="Latest Chrome extension standard with enhanced security"
-                />
-                <TechStackItem
-                  icon={<Cpu className="h-5 w-5" />}
-                  title="Service Worker"
-                  description="Background processing with efficient resource management"
-                />
-                <TechStackItem
-                  icon={<Database className="h-5 w-5" />}
-                  title="Local Storage"
-                  description="Client-side data persistence with privacy protection"
-                />
               </div>
             </div>
           </div>
@@ -335,15 +256,15 @@ function App() {
         {activeTab === 'demo' && (
           <div className="space-y-8">
             <div className="text-center space-y-4">
-              <h2 className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Live Translation Demo</h2>
-              <p className={`max-w-2xl mx-auto ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+              <h2 className="text-3xl font-bold text-gray-900">Live Translation Demo</h2>
+              <p className="text-gray-600 max-w-2xl mx-auto">
                 Experience the power of our custom translation engine. Try translating different phrases 
                 and see how fast and accurate our local translation system is.
               </p>
             </div>
 
             <div className="max-w-4xl mx-auto">
-              <div className={`rounded-2xl shadow-xl border overflow-hidden ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
+              <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
                 <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-4">
                   <h3 className="text-white font-semibold flex items-center space-x-2">
                     <Globe className="h-5 w-5" />
@@ -355,34 +276,30 @@ function App() {
                   {/* Language Selection */}
                   <div className="flex items-center justify-center space-x-4">
                     <div className="flex items-center space-x-2">
-                      <span className={`text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>English</span>
-                      <div className="w-8 h-6 bg-blue-100 dark:bg-blue-900 rounded flex items-center justify-center">
-                        <span className="text-xs font-bold text-blue-600 dark:text-blue-400">EN</span>
+                      <span className="text-sm font-medium text-gray-700">English</span>
+                      <div className="w-8 h-6 bg-blue-100 rounded flex items-center justify-center">
+                        <span className="text-xs font-bold text-blue-600">EN</span>
                       </div>
                     </div>
-                    <ArrowRight className={`h-5 w-5 ${darkMode ? 'text-gray-400' : 'text-gray-400'}`} />
+                    <ArrowRight className="h-5 w-5 text-gray-400" />
                     <div className="flex items-center space-x-2">
-                      <div className="w-8 h-6 bg-red-100 dark:bg-red-900 rounded flex items-center justify-center">
-                        <span className="text-xs font-bold text-red-600 dark:text-red-400">ES</span>
+                      <div className="w-8 h-6 bg-red-100 rounded flex items-center justify-center">
+                        <span className="text-xs font-bold text-red-600">ES</span>
                       </div>
-                      <span className={`text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Spanish</span>
+                      <span className="text-sm font-medium text-gray-700">Spanish</span>
                     </div>
                   </div>
 
                   {/* Text Input */}
                   <div className="space-y-4">
                     <div>
-                      <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
                         Enter text to translate:
                       </label>
                       <textarea
                         value={demoText}
                         onChange={(e) => setDemoText(e.target.value)}
-                        className={`w-full p-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none transition-colors ${
-                          darkMode 
-                            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
-                            : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
-                        }`}
+                        className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
                         rows={3}
                         placeholder="Type something to translate..."
                       />
@@ -393,7 +310,7 @@ function App() {
                       <button
                         onClick={translateDemo}
                         disabled={isTranslating || !demoText.trim()}
-                        className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300 flex items-center space-x-2 mx-auto disabled:cursor-not-allowed"
+                        className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300 flex items-center space-x-2 mx-auto"
                       >
                         {isTranslating ? (
                           <>
@@ -411,19 +328,19 @@ function App() {
 
                     {/* Translation Result */}
                     {translatedText && (
-                      <div className={`border rounded-lg p-4 ${darkMode ? 'bg-green-900/20 border-green-700' : 'bg-green-50 border-green-200'}`}>
+                      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                         <div className="flex items-center justify-between mb-2">
-                          <label className={`text-sm font-medium ${darkMode ? 'text-green-300' : 'text-green-800'}`}>Translation:</label>
+                          <label className="text-sm font-medium text-green-800">Translation:</label>
                           <button
                             onClick={() => navigator.clipboard.writeText(translatedText)}
-                            className={`p-1 rounded transition-colors ${darkMode ? 'text-green-400 hover:text-green-300' : 'text-green-600 hover:text-green-700'}`}
+                            className="text-green-600 hover:text-green-700 p-1 rounded"
                             title="Copy translation"
                           >
                             <Copy className="h-4 w-4" />
                           </button>
                         </div>
-                        <div className={`font-medium text-lg ${darkMode ? 'text-green-200' : 'text-green-900'}`}>{translatedText}</div>
-                        <div className={`text-xs mt-2 ${darkMode ? 'text-green-400' : 'text-green-600'}`}>
+                        <div className="text-green-900 font-medium text-lg">{translatedText}</div>
+                        <div className="text-xs text-green-600 mt-2">
                           ✓ Translated locally in your browser
                         </div>
                       </div>
@@ -432,7 +349,7 @@ function App() {
 
                   {/* Quick Examples */}
                   <div>
-                    <label className={`block text-sm font-medium mb-3 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <label className="block text-sm font-medium text-gray-700 mb-3">
                       Quick examples to try:
                     </label>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -440,18 +357,12 @@ function App() {
                         'Good morning',
                         'Thank you very much',
                         'Where is the library?',
-                        'I love programming',
-                        'This is amazing',
                         'Hello, how are you today?'
                       ].map(example => (
                         <button
                           key={example}
                           onClick={() => setDemoText(example)}
-                          className={`text-left p-3 rounded-lg text-sm transition-colors border ${
-                            darkMode 
-                              ? 'bg-gray-700 hover:bg-gray-600 border-gray-600 hover:border-gray-500 text-gray-200' 
-                              : 'bg-gray-50 hover:bg-gray-100 border-gray-200 hover:border-gray-300 text-gray-800'
-                          }`}
+                          className="text-left p-3 bg-gray-50 hover:bg-gray-100 rounded-lg text-sm transition-colors border border-gray-200 hover:border-gray-300"
                         >
                           {example}
                         </button>
@@ -467,8 +378,8 @@ function App() {
         {activeTab === 'features' && (
           <div className="space-y-12">
             <div className="text-center space-y-4">
-              <h2 className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Comprehensive Features</h2>
-              <p className={`max-w-2xl mx-auto ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+              <h2 className="text-3xl font-bold text-gray-900">Comprehensive Features</h2>
+              <p className="text-gray-600 max-w-2xl mx-auto">
                 Built with modern web technologies and best practices for a professional-grade experience.
               </p>
             </div>
@@ -478,83 +389,56 @@ function App() {
                 icon={<Shield className="h-8 w-8" />}
                 title="Privacy & Security"
                 description="All translations happen locally. No data sent to external servers. Your privacy is completely protected."
-                gradient="from-green-500 to-emerald-600"
               />
               <FeatureCard
                 icon={<Zap className="h-8 w-8" />}
                 title="Lightning Fast"
                 description="Custom translation engine optimized for speed. Instant translations without network delays."
-                gradient="from-yellow-500 to-orange-600"
               />
               <FeatureCard
                 icon={<Globe className="h-8 w-8" />}
                 title="Multi-Language Support"
-                description="Supports 25+ languages including English, Spanish, French, German, Italian, and more."
-                gradient="from-blue-500 to-cyan-600"
+                description="Supports 20+ languages including English, Spanish, French, German, Italian, and more."
               />
               <FeatureCard
                 icon={<Monitor className="h-8 w-8" />}
                 title="Page Translation"
                 description="Translate entire web pages with one click. Preserve formatting and layout."
-                gradient="from-purple-500 to-pink-600"
               />
               <FeatureCard
-                icon={<MousePointer className="h-8 w-8" />}
+                icon={<Copy className="h-8 w-8" />}
                 title="Text Selection"
                 description="Right-click to translate selected text. Floating translation button for quick access."
-                gradient="from-indigo-500 to-purple-600"
               />
               <FeatureCard
                 icon={<History className="h-8 w-8" />}
                 title="Translation History"
                 description="Keep track of your translations. Export history and manage favorites."
-                gradient="from-teal-500 to-green-600"
               />
               <FeatureCard
                 icon={<Settings className="h-8 w-8" />}
                 title="Customizable Settings"
                 description="Adjust default languages, toggle features, and personalize your experience."
-                gradient="from-gray-500 to-slate-600"
               />
               <FeatureCard
                 icon={<Smartphone className="h-8 w-8" />}
                 title="Responsive Design"
                 description="Works perfectly on all screen sizes. Optimized for desktop and mobile browsers."
-                gradient="from-rose-500 to-red-600"
               />
               <FeatureCard
                 icon={<Code className="h-8 w-8" />}
                 title="Developer Friendly"
                 description="Clean, well-documented code. Easy to customize and extend functionality."
-                gradient="from-emerald-500 to-teal-600"
-              />
-              <FeatureCard
-                icon={<Volume2 className="h-8 w-8" />}
-                title="Text-to-Speech"
-                description="Hear translations spoken aloud with built-in speech synthesis."
-                gradient="from-violet-500 to-purple-600"
-              />
-              <FeatureCard
-                icon={<Eye className="h-8 w-8" />}
-                title="Hover Translation"
-                description="Optional hover translation for quick text understanding without clicking."
-                gradient="from-amber-500 to-yellow-600"
-              />
-              <FeatureCard
-                icon={<Keyboard className="h-8 w-8" />}
-                title="Keyboard Shortcuts"
-                description="Quick access with customizable keyboard shortcuts for power users."
-                gradient="from-lime-500 to-green-600"
               />
             </div>
 
             {/* Technical Specifications */}
-            <div className={`rounded-2xl shadow-xl p-8 border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
-              <h3 className={`text-2xl font-bold mb-6 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Technical Specifications</h3>
+            <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+              <h3 className="text-2xl font-bold text-gray-900 mb-6">Technical Specifications</h3>
               <div className="grid md:grid-cols-2 gap-8">
                 <div>
-                  <h4 className={`font-semibold mb-4 ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>Core Technologies</h4>
-                  <ul className={`space-y-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                  <h4 className="font-semibold text-gray-800 mb-4">Core Technologies</h4>
+                  <ul className="space-y-2 text-gray-600">
                     <li className="flex items-center space-x-2">
                       <CheckCircle className="h-4 w-4 text-green-500" />
                       <span>Manifest V3 Chrome Extension</span>
@@ -571,15 +455,11 @@ function App() {
                       <CheckCircle className="h-4 w-4 text-green-500" />
                       <span>Content Script Injection</span>
                     </li>
-                    <li className="flex items-center space-x-2">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                      <span>Local Storage Management</span>
-                    </li>
                   </ul>
                 </div>
                 <div>
-                  <h4 className={`font-semibold mb-4 ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>Key Features</h4>
-                  <ul className={`space-y-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                  <h4 className="font-semibold text-gray-800 mb-4">Key Features</h4>
+                  <ul className="space-y-2 text-gray-600">
                     <li className="flex items-center space-x-2">
                       <CheckCircle className="h-4 w-4 text-green-500" />
                       <span>Offline Translation Capability</span>
@@ -594,159 +474,7 @@ function App() {
                     </li>
                     <li className="flex items-center space-x-2">
                       <CheckCircle className="h-4 w-4 text-green-500" />
-                      <span>Translation History Export</span>
-                    </li>
-                    <li className="flex items-center space-x-2">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                      <span>Dark Mode Support</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'architecture' && (
-          <div className="space-y-8">
-            <div className="text-center space-y-4">
-              <h2 className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>System Architecture</h2>
-              <p className={`max-w-2xl mx-auto ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                Understanding the technical architecture and design patterns used in Pure Translator.
-              </p>
-            </div>
-
-            {/* Architecture Diagram */}
-            <div className={`rounded-2xl shadow-xl p-8 border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
-              <h3 className={`text-xl font-bold mb-6 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Extension Components</h3>
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className={`p-4 rounded-lg border-2 border-dashed ${darkMode ? 'border-blue-400 bg-blue-900/20' : 'border-blue-300 bg-blue-50'}`}>
-                  <div className="text-center">
-                    <div className="bg-blue-500 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-3">
-                      <Settings className="h-6 w-6 text-white" />
-                    </div>
-                    <h4 className={`font-semibold ${darkMode ? 'text-blue-300' : 'text-blue-800'}`}>Manifest</h4>
-                    <p className={`text-sm mt-1 ${darkMode ? 'text-blue-200' : 'text-blue-600'}`}>Extension configuration and permissions</p>
-                  </div>
-                </div>
-                <div className={`p-4 rounded-lg border-2 border-dashed ${darkMode ? 'border-green-400 bg-green-900/20' : 'border-green-300 bg-green-50'}`}>
-                  <div className="text-center">
-                    <div className="bg-green-500 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-3">
-                      <Cpu className="h-6 w-6 text-white" />
-                    </div>
-                    <h4 className={`font-semibold ${darkMode ? 'text-green-300' : 'text-green-800'}`}>Background</h4>
-                    <p className={`text-sm mt-1 ${darkMode ? 'text-green-200' : 'text-green-600'}`}>Service worker with translation engine</p>
-                  </div>
-                </div>
-                <div className={`p-4 rounded-lg border-2 border-dashed ${darkMode ? 'border-purple-400 bg-purple-900/20' : 'border-purple-300 bg-purple-50'}`}>
-                  <div className="text-center">
-                    <div className="bg-purple-500 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-3">
-                      <FileText className="h-6 w-6 text-white" />
-                    </div>
-                    <h4 className={`font-semibold ${darkMode ? 'text-purple-300' : 'text-purple-800'}`}>Content Script</h4>
-                    <p className={`text-sm mt-1 ${darkMode ? 'text-purple-200' : 'text-purple-600'}`}>Page interaction and UI injection</p>
-                  </div>
-                </div>
-                <div className={`p-4 rounded-lg border-2 border-dashed ${darkMode ? 'border-orange-400 bg-orange-900/20' : 'border-orange-300 bg-orange-50'}`}>
-                  <div className="text-center">
-                    <div className="bg-orange-500 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-3">
-                      <Monitor className="h-6 w-6 text-white" />
-                    </div>
-                    <h4 className={`font-semibold ${darkMode ? 'text-orange-300' : 'text-orange-800'}`}>Popup UI</h4>
-                    <p className={`text-sm mt-1 ${darkMode ? 'text-orange-200' : 'text-orange-600'}`}>Extension interface and controls</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Translation Engine Details */}
-            <div className={`rounded-2xl shadow-xl p-8 border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
-              <h3 className={`text-xl font-bold mb-6 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Translation Engine Architecture</h3>
-              <div className="space-y-6">
-                <div className="grid md:grid-cols-3 gap-6">
-                  <div className={`p-4 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
-                    <Brain className={`h-8 w-8 mb-3 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
-                    <h4 className={`font-semibold mb-2 ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>Language Detection</h4>
-                    <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                      Pattern-based language identification using character sets and common words
-                    </p>
-                  </div>
-                  <div className={`p-4 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
-                    <Database className={`h-8 w-8 mb-3 ${darkMode ? 'text-green-400' : 'text-green-600'}`} />
-                    <h4 className={`font-semibold mb-2 ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>Dictionary System</h4>
-                    <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                      Comprehensive word and phrase mappings with linguistic rule applications
-                    </p>
-                  </div>
-                  <div className={`p-4 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
-                    <Target className={`h-8 w-8 mb-3 ${darkMode ? 'text-purple-400' : 'text-purple-600'}`} />
-                    <h4 className={`font-semibold mb-2 ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>Pattern Matching</h4>
-                    <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                      Advanced pattern recognition for phrases and grammatical structures
-                    </p>
-                  </div>
-                </div>
-                
-                <div className={`p-4 rounded-lg border ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-blue-50 border-blue-200'}`}>
-                  <h4 className={`font-semibold mb-2 ${darkMode ? 'text-blue-300' : 'text-blue-800'}`}>Translation Process Flow</h4>
-                  <div className="flex items-center space-x-2 text-sm">
-                    <span className={`px-2 py-1 rounded ${darkMode ? 'bg-gray-600 text-gray-200' : 'bg-white text-gray-700'}`}>Input Text</span>
-                    <ArrowRight className="h-4 w-4" />
-                    <span className={`px-2 py-1 rounded ${darkMode ? 'bg-gray-600 text-gray-200' : 'bg-white text-gray-700'}`}>Language Detection</span>
-                    <ArrowRight className="h-4 w-4" />
-                    <span className={`px-2 py-1 rounded ${darkMode ? 'bg-gray-600 text-gray-200' : 'bg-white text-gray-700'}`}>Pattern Matching</span>
-                    <ArrowRight className="h-4 w-4" />
-                    <span className={`px-2 py-1 rounded ${darkMode ? 'bg-gray-600 text-gray-200' : 'bg-white text-gray-700'}`}>Dictionary Lookup</span>
-                    <ArrowRight className="h-4 w-4" />
-                    <span className={`px-2 py-1 rounded ${darkMode ? 'bg-gray-600 text-gray-200' : 'bg-white text-gray-700'}`}>Output</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Data Flow */}
-            <div className={`rounded-2xl shadow-xl p-8 border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
-              <h3 className={`text-xl font-bold mb-6 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Data Flow & Storage</h3>
-              <div className="grid md:grid-cols-2 gap-8">
-                <div>
-                  <h4 className={`font-semibold mb-4 ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>Local Storage</h4>
-                  <ul className={`space-y-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                    <li className="flex items-center space-x-2">
-                      <Save className="h-4 w-4 text-blue-500" />
-                      <span>Translation history (up to 100 items)</span>
-                    </li>
-                    <li className="flex items-center space-x-2">
-                      <Settings className="h-4 w-4 text-green-500" />
-                      <span>User preferences and settings</span>
-                    </li>
-                    <li className="flex items-center space-x-2">
-                      <Database className="h-4 w-4 text-purple-500" />
-                      <span>Custom dictionary entries</span>
-                    </li>
-                    <li className="flex items-center space-x-2">
-                      <BarChart3 className="h-4 w-4 text-orange-500" />
-                      <span>Usage statistics and metrics</span>
-                    </li>
-                  </ul>
-                </div>
-                <div>
-                  <h4 className={`font-semibold mb-4 ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>Privacy Features</h4>
-                  <ul className={`space-y-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                    <li className="flex items-center space-x-2">
-                      <Shield className="h-4 w-4 text-green-500" />
-                      <span>No external API calls</span>
-                    </li>
-                    <li className="flex items-center space-x-2">
-                      <Lock className="h-4 w-4 text-blue-500" />
-                      <span>Local-only data processing</span>
-                    </li>
-                    <li className="flex items-center space-x-2">
-                      <Eye className="h-4 w-4 text-purple-500" />
-                      <span>No user tracking or analytics</span>
-                    </li>
-                    <li className="flex items-center space-x-2">
-                      <Database className="h-4 w-4 text-orange-500" />
-                      <span>Client-side storage only</span>
+                      <span>Local Storage Management</span>
                     </li>
                   </ul>
                 </div>
@@ -758,8 +486,8 @@ function App() {
         {activeTab === 'installation' && (
           <div className="space-y-8">
             <div className="text-center space-y-4">
-              <h2 className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Installation Guide</h2>
-              <p className={`max-w-2xl mx-auto ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+              <h2 className="text-3xl font-bold text-gray-900">Installation Guide</h2>
+              <p className="text-gray-600 max-w-2xl mx-auto">
                 Follow these simple steps to install the Pure Translator extension in your Chrome browser.
               </p>
             </div>
@@ -814,12 +542,12 @@ function App() {
             </div>
 
             {/* System Requirements */}
-            <div className={`rounded-2xl shadow-xl p-8 border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
-              <h3 className={`text-xl font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>System Requirements</h3>
+            <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">System Requirements</h3>
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <h4 className={`font-semibold mb-3 ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>Supported Browsers</h4>
-                  <ul className={`space-y-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                  <h4 className="font-semibold text-gray-800 mb-3">Supported Browsers</h4>
+                  <ul className="space-y-2 text-gray-600">
                     <li className="flex items-center space-x-2">
                       <CheckCircle className="h-4 w-4 text-green-500" />
                       <span>Google Chrome 88+</span>
@@ -832,15 +560,11 @@ function App() {
                       <CheckCircle className="h-4 w-4 text-green-500" />
                       <span>Brave Browser</span>
                     </li>
-                    <li className="flex items-center space-x-2">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                      <span>Opera 74+</span>
-                    </li>
                   </ul>
                 </div>
                 <div>
-                  <h4 className={`font-semibold mb-3 ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>Minimum Requirements</h4>
-                  <ul className={`space-y-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                  <h4 className="font-semibold text-gray-800 mb-3">Minimum Requirements</h4>
+                  <ul className="space-y-2 text-gray-600">
                     <li className="flex items-center space-x-2">
                       <CheckCircle className="h-4 w-4 text-green-500" />
                       <span>4GB RAM</span>
@@ -853,36 +577,7 @@ function App() {
                       <CheckCircle className="h-4 w-4 text-green-500" />
                       <span>Windows 10 / macOS 10.14 / Linux</span>
                     </li>
-                    <li className="flex items-center space-x-2">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                      <span>Internet connection (for installation only)</span>
-                    </li>
                   </ul>
-                </div>
-              </div>
-            </div>
-
-            {/* Troubleshooting */}
-            <div className={`rounded-2xl shadow-xl p-8 border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
-              <h3 className={`text-xl font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Troubleshooting</h3>
-              <div className="space-y-4">
-                <div>
-                  <h4 className={`font-semibold ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>Extension not loading?</h4>
-                  <p className={`text-sm mt-1 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                    Make sure all files are in the same folder and Developer mode is enabled in Chrome extensions.
-                  </p>
-                </div>
-                <div>
-                  <h4 className={`font-semibold ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>Translation not working?</h4>
-                  <p className={`text-sm mt-1 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                    Try refreshing the page after installation. Some pages may block content scripts.
-                  </p>
-                </div>
-                <div>
-                  <h4 className={`font-semibold ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>Popup not opening?</h4>
-                  <p className={`text-sm mt-1 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                    Check if the extension is enabled and try reloading it from the extensions page.
-                  </p>
                 </div>
               </div>
             </div>
@@ -892,8 +587,8 @@ function App() {
         {activeTab === 'files' && (
           <div className="space-y-8">
             <div className="text-center space-y-4">
-              <h2 className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Source Files</h2>
-              <p className={`max-w-2xl mx-auto ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+              <h2 className="text-3xl font-bold text-gray-900">Source Files</h2>
+              <p className="text-gray-600 max-w-2xl mx-auto">
                 Complete source code for the Pure Translator extension. All files are production-ready 
                 and thoroughly tested.
               </p>
@@ -905,88 +600,59 @@ function App() {
                   name: 'manifest.json',
                   description: 'Extension manifest with permissions and configuration',
                   icon: <Settings className="h-5 w-5" />,
-                  content: manifestContent,
-                  color: 'blue'
+                  content: manifestContent
                 },
                 {
                   name: 'background.js',
                   description: 'Service worker with translation engine and context menus',
-                  icon: <Cpu className="h-5 w-5" />,
-                  content: backgroundContent,
-                  color: 'green'
-                },
-                {
-                  name: 'translation-engine.js',
-                  description: 'Core translation engine with language detection and processing',
-                  icon: <Brain className="h-5 w-5" />,
-                  content: translationEngineContent,
-                  color: 'purple'
+                  icon: <Code className="h-5 w-5" />,
+                  content: backgroundContent
                 },
                 {
                   name: 'content.js',
                   description: 'Content script for page interaction and UI injection',
                   icon: <FileText className="h-5 w-5" />,
-                  content: contentContent,
-                  color: 'orange'
+                  content: contentContent
                 },
                 {
                   name: 'content.css',
-                  description: 'Styles for translation UI components with dark mode support',
-                  icon: <Palette className="h-5 w-5" />,
-                  content: contentCSS,
-                  color: 'pink'
+                  description: 'Styles for translation UI components',
+                  icon: <FileText className="h-5 w-5" />,
+                  content: contentCSS
                 },
                 {
                   name: 'popup.html',
                   description: 'Extension popup interface structure',
                   icon: <Monitor className="h-5 w-5" />,
-                  content: popupHTML,
-                  color: 'indigo'
+                  content: popupHTML
                 },
                 {
                   name: 'popup.css',
-                  description: 'Popup interface styling with responsive design',
-                  icon: <Palette className="h-5 w-5" />,
-                  content: popupCSS,
-                  color: 'teal'
+                  description: 'Popup interface styling',
+                  icon: <FileText className="h-5 w-5" />,
+                  content: popupCSS
                 },
                 {
                   name: 'popup.js',
-                  description: 'Popup functionality and user interaction handling',
+                  description: 'Popup functionality and user interaction',
                   icon: <Code className="h-5 w-5" />,
-                  content: popupJS,
-                  color: 'red'
+                  content: popupJS
                 },
                 {
                   name: 'README.md',
-                  description: 'Complete documentation and project overview',
+                  description: 'Complete documentation and usage guide',
                   icon: <Book className="h-5 w-5" />,
-                  content: readmeContent,
-                  color: 'gray'
-                },
-                {
-                  name: 'INSTALLATION.md',
-                  description: 'Detailed installation instructions and troubleshooting',
-                  icon: <Settings className="h-5 w-5" />,
-                  content: installationContent,
-                  color: 'yellow'
-                },
-                {
-                  name: 'USAGE_GUIDE.md',
-                  description: 'Comprehensive usage guide and feature documentation',
-                  icon: <Book className="h-5 w-5" />,
-                  content: usageGuideContent,
-                  color: 'emerald'
+                  content: readmeContent
                 }
               ].map(file => (
-                <div key={file.name} className={`rounded-xl shadow-lg border overflow-hidden ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
-                  <div className={`px-6 py-4 border-b ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'}`}>
+                <div key={file.name} className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+                  <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
-                        <div className={`text-${file.color}-600 dark:text-${file.color}-400`}>{file.icon}</div>
+                        <div className="text-blue-600">{file.icon}</div>
                         <div>
-                          <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{file.name}</h3>
-                          <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>{file.description}</p>
+                          <h3 className="font-semibold text-gray-900">{file.name}</h3>
+                          <p className="text-sm text-gray-600">{file.description}</p>
                         </div>
                       </div>
                       <button
@@ -999,8 +665,8 @@ function App() {
                     </div>
                   </div>
                   <div className="p-4">
-                    <pre className={`p-4 rounded-lg overflow-x-auto text-sm max-h-64 ${darkMode ? 'bg-gray-900 text-green-400' : 'bg-gray-900 text-green-400'}`}>
-                      <code>{file.content.slice(0, 800)}...</code>
+                    <pre className="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm max-h-64">
+                      <code>{file.content.slice(0, 500)}...</code>
                     </pre>
                   </div>
                 </div>
@@ -1022,46 +688,46 @@ function App() {
         {activeTab === 'guide' && (
           <div className="space-y-8">
             <div className="text-center space-y-4">
-              <h2 className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Usage Guide</h2>
-              <p className={`max-w-2xl mx-auto ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+              <h2 className="text-3xl font-bold text-gray-900">Usage Guide</h2>
+              <p className="text-gray-600 max-w-2xl mx-auto">
                 Learn how to use all the features of Pure Translator extension effectively.
               </p>
             </div>
 
             <div className="max-w-4xl mx-auto space-y-8">
               {/* Quick Start */}
-              <div className={`rounded-2xl shadow-xl p-8 border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
-                <h3 className={`text-2xl font-bold mb-6 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Quick Start</h3>
+              <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+                <h3 className="text-2xl font-bold text-gray-900 mb-6">Quick Start</h3>
                 <div className="space-y-4">
                   <div className="flex items-start space-x-4">
-                    <div className="bg-blue-100 dark:bg-blue-900 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                      <span className="text-blue-600 dark:text-blue-400 font-bold text-sm">1</span>
+                    <div className="bg-blue-100 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <span className="text-blue-600 font-bold text-sm">1</span>
                     </div>
                     <div>
-                      <h4 className={`font-semibold ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>Select Text Translation</h4>
-                      <p className={`text-sm mt-1 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                      <h4 className="font-semibold text-gray-800">Select Text Translation</h4>
+                      <p className="text-gray-600 text-sm mt-1">
                         Select any text on a webpage and right-click to see translation options in the context menu.
                       </p>
                     </div>
                   </div>
                   <div className="flex items-start space-x-4">
-                    <div className="bg-blue-100 dark:bg-blue-900 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                      <span className="text-blue-600 dark:text-blue-400 font-bold text-sm">2</span>
+                    <div className="bg-blue-100 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <span className="text-blue-600 font-bold text-sm">2</span>
                     </div>
                     <div>
-                      <h4 className={`font-semibold ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>Floating Translate Button</h4>
-                      <p className={`text-sm mt-1 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                      <h4 className="font-semibold text-gray-800">Floating Translate Button</h4>
+                      <p className="text-gray-600 text-sm mt-1">
                         After selecting text, a floating translate button appears for quick translation access.
                       </p>
                     </div>
                   </div>
                   <div className="flex items-start space-x-4">
-                    <div className="bg-blue-100 dark:bg-blue-900 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                      <span className="text-blue-600 dark:text-blue-400 font-bold text-sm">3</span>
+                    <div className="bg-blue-100 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <span className="text-blue-600 font-bold text-sm">3</span>
                     </div>
                     <div>
-                      <h4 className={`font-semibold ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>Page Translation</h4>
-                      <p className={`text-sm mt-1 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                      <h4 className="font-semibold text-gray-800">Page Translation</h4>
+                      <p className="text-gray-600 text-sm mt-1">
                         Use Ctrl+Shift+T or the popup interface to translate entire web pages.
                       </p>
                     </div>
@@ -1070,146 +736,69 @@ function App() {
               </div>
 
               {/* Features Guide */}
-              <div className={`rounded-2xl shadow-xl p-8 border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
-                <h3 className={`text-2xl font-bold mb-6 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Feature Guide</h3>
+              <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+                <h3 className="text-2xl font-bold text-gray-900 mb-6">Feature Guide</h3>
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <h4 className={`font-semibold mb-3 ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>Popup Interface</h4>
-                    <ul className={`space-y-2 text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                      <li className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                        <span>Quick text translation</span>
-                      </li>
-                      <li className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        <span>Language selection and swapping</span>
-                      </li>
-                      <li className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                        <span>Translation history management</span>
-                      </li>
-                      <li className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                        <span>Settings and preferences</span>
-                      </li>
+                    <h4 className="font-semibold text-gray-800 mb-3">Popup Interface</h4>
+                    <ul className="space-y-2 text-sm text-gray-600">
+                      <li>• Quick text translation</li>
+                      <li>• Language selection</li>
+                      <li>• Translation history</li>
+                      <li>• Settings and preferences</li>
                     </ul>
                   </div>
                   <div>
-                    <h4 className={`font-semibold mb-3 ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>Context Menu</h4>
-                    <ul className={`space-y-2 text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                      <li className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                        <span>Translate selected text</span>
-                      </li>
-                      <li className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                        <span>Language-specific options</span>
-                      </li>
-                      <li className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
-                        <span>Page translation</span>
-                      </li>
-                      <li className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-pink-500 rounded-full"></div>
-                        <span>Quick access shortcuts</span>
-                      </li>
+                    <h4 className="font-semibold text-gray-800 mb-3">Context Menu</h4>
+                    <ul className="space-y-2 text-sm text-gray-600">
+                      <li>• Translate selected text</li>
+                      <li>• Language-specific options</li>
+                      <li>• Page translation</li>
+                      <li>• Quick access shortcuts</li>
                     </ul>
                   </div>
                 </div>
               </div>
 
               {/* Keyboard Shortcuts */}
-              <div className={`rounded-2xl shadow-xl p-8 border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
-                <h3 className={`text-2xl font-bold mb-6 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Keyboard Shortcuts</h3>
+              <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+                <h3 className="text-2xl font-bold text-gray-900 mb-6">Keyboard Shortcuts</h3>
                 <div className="space-y-3">
-                  <div className={`flex items-center justify-between py-2 border-b ${darkMode ? 'border-gray-600' : 'border-gray-100'}`}>
-                    <span className={`${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>Translate Page</span>
-                    <kbd className={`px-3 py-1 rounded text-sm font-mono ${darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'}`}>Ctrl + Shift + T</kbd>
+                  <div className="flex items-center justify-between py-2 border-b border-gray-100">
+                    <span className="text-gray-800">Translate Page</span>
+                    <kbd className="bg-gray-100 px-3 py-1 rounded text-sm font-mono">Ctrl + Shift + T</kbd>
                   </div>
-                  <div className={`flex items-center justify-between py-2 border-b ${darkMode ? 'border-gray-600' : 'border-gray-100'}`}>
-                    <span className={`${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>Close Translation UI</span>
-                    <kbd className={`px-3 py-1 rounded text-sm font-mono ${darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'}`}>Escape</kbd>
+                  <div className="flex items-center justify-between py-2 border-b border-gray-100">
+                    <span className="text-gray-800">Close Translation UI</span>
+                    <kbd className="bg-gray-100 px-3 py-1 rounded text-sm font-mono">Escape</kbd>
                   </div>
-                  <div className={`flex items-center justify-between py-2 border-b ${darkMode ? 'border-gray-600' : 'border-gray-100'}`}>
-                    <span className={`${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>Copy Translation</span>
-                    <kbd className={`px-3 py-1 rounded text-sm font-mono ${darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'}`}>Ctrl + C</kbd>
-                  </div>
-                  <div className={`flex items-center justify-between py-2`}>
-                    <span className={`${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>Open Extension Popup</span>
-                    <kbd className={`px-3 py-1 rounded text-sm font-mono ${darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'}`}>Alt + T</kbd>
-                  </div>
-                </div>
-              </div>
-
-              {/* Advanced Features */}
-              <div className={`rounded-2xl shadow-xl p-8 border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
-                <h3 className={`text-2xl font-bold mb-6 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Advanced Features</h3>
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <h4 className={`font-semibold mb-3 flex items-center space-x-2 ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>
-                      <Volume2 className="h-5 w-5 text-blue-500" />
-                      <span>Text-to-Speech</span>
-                    </h4>
-                    <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                      Click the speaker icon in translation results to hear the pronunciation of translated text.
-                    </p>
-                  </div>
-                  <div>
-                    <h4 className={`font-semibold mb-3 flex items-center space-x-2 ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>
-                      <History className="h-5 w-5 text-green-500" />
-                      <span>Translation History</span>
-                    </h4>
-                    <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                      Access your translation history in the popup. Export as CSV for backup or analysis.
-                    </p>
-                  </div>
-                  <div>
-                    <h4 className={`font-semibold mb-3 flex items-center space-x-2 ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>
-                      <Eye className="h-5 w-5 text-purple-500" />
-                      <span>Hover Translation</span>
-                    </h4>
-                    <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                      Enable hover translation in settings for instant translation tooltips on text hover.
-                    </p>
-                  </div>
-                  <div>
-                    <h4 className={`font-semibold mb-3 flex items-center space-x-2 ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>
-                      <Settings className="h-5 w-5 text-orange-500" />
-                      <span>Custom Settings</span>
-                    </h4>
-                    <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                      Customize default languages, enable/disable features, and personalize your experience.
-                    </p>
+                  <div className="flex items-center justify-between py-2">
+                    <span className="text-gray-800">Copy Translation</span>
+                    <kbd className="bg-gray-100 px-3 py-1 rounded text-sm font-mono">Ctrl + C</kbd>
                   </div>
                 </div>
               </div>
 
               {/* Tips & Tricks */}
-              <div className={`rounded-2xl p-8 border ${darkMode ? 'bg-gradient-to-r from-blue-900/20 to-purple-900/20 border-blue-700' : 'bg-gradient-to-r from-blue-50 to-purple-50 border-blue-100'}`}>
-                <h3 className={`text-2xl font-bold mb-6 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Tips & Tricks</h3>
+              <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8 border border-blue-100">
+                <h3 className="text-2xl font-bold text-gray-900 mb-6">Tips & Tricks</h3>
                 <div className="space-y-4">
                   <div className="flex items-start space-x-3">
                     <div className="bg-blue-500 w-2 h-2 rounded-full mt-2 flex-shrink-0"></div>
-                    <p className={`${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                    <p className="text-gray-700">
                       <strong>Batch Translation:</strong> Select multiple paragraphs for efficient translation of larger text blocks.
                     </p>
                   </div>
                   <div className="flex items-start space-x-3">
                     <div className="bg-purple-500 w-2 h-2 rounded-full mt-2 flex-shrink-0"></div>
-                    <p className={`${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                    <p className="text-gray-700">
                       <strong>Language Detection:</strong> The extension automatically detects the source language for better accuracy.
                     </p>
                   </div>
                   <div className="flex items-start space-x-3">
                     <div className="bg-green-500 w-2 h-2 rounded-full mt-2 flex-shrink-0"></div>
-                    <p className={`${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                    <p className="text-gray-700">
                       <strong>Privacy First:</strong> All translations happen locally - no data is sent to external servers.
-                    </p>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <div className="bg-orange-500 w-2 h-2 rounded-full mt-2 flex-shrink-0"></div>
-                    <p className={`${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-                      <strong>Performance:</strong> Clear translation history periodically for optimal performance.
                     </p>
                   </div>
                 </div>
@@ -1227,7 +816,7 @@ const manifestContent = `{
   "manifest_version": 3,
   "name": "Pure Translator",
   "version": "1.0.0",
-  "description": "Privacy-focused translation extension with custom engine - no external APIs required",
+  "description": "Privacy-focused translation extension with custom engine",
   "permissions": [
     "activeTab",
     "storage",
@@ -1260,316 +849,264 @@ const manifestContent = `{
   ]
 }`;
 
-const translationEngineContent = `// Pure Translation Engine - Custom Implementation
-class PureTranslationEngine {
+const backgroundContent = `// Pure Translator Background Service Worker
+class TranslationEngine {
   constructor() {
     this.cache = new Map();
     this.dictionary = new Map();
-    this.patterns = new Map();
-    this.languageDetector = new LanguageDetector();
     this.initializeDictionary();
-    this.initializePatterns();
   }
 
   initializeDictionary() {
-    // Comprehensive translation dictionary
+    // Core translation dictionary
     const translations = {
       'en-es': {
-        // Basic words
-        'hello': 'hola', 'goodbye': 'adiós', 'thank you': 'gracias', 'please': 'por favor',
-        'yes': 'sí', 'no': 'no', 'water': 'agua', 'food': 'comida', 'house': 'casa',
-        'car': 'coche', 'book': 'libro', 'computer': 'computadora', 'phone': 'teléfono',
-        'money': 'dinero', 'time': 'tiempo', 'day': 'día', 'night': 'noche',
-        'good': 'bueno', 'bad': 'malo', 'big': 'grande', 'small': 'pequeño',
-        'happy': 'feliz', 'sad': 'triste', 'love': 'amor', 'friend': 'amigo',
-        'family': 'familia', 'work': 'trabajo', 'school': 'escuela', 'help': 'ayuda',
-        'beautiful': 'hermoso', 'important': 'importante', 'difficult': 'difícil',
-        'easy': 'fácil', 'new': 'nuevo', 'old': 'viejo', 'young': 'joven',
-        
-        // Common phrases
-        'good morning': 'buenos días', 'good afternoon': 'buenas tardes',
-        'good evening': 'buenas noches', 'good night': 'buenas noches',
-        'how are you': '¿cómo estás?', 'what is your name': '¿cómo te llamas?',
-        'where is': '¿dónde está', 'how much': '¿cuánto cuesta',
-        'excuse me': 'disculpe', 'i am sorry': 'lo siento',
-        'i love you': 'te amo', 'see you later': 'hasta luego',
-        
-        // Verbs
-        'to be': 'ser/estar', 'to have': 'tener', 'to do': 'hacer', 'to go': 'ir',
-        'to come': 'venir', 'to see': 'ver', 'to know': 'saber', 'to think': 'pensar',
-        'to take': 'tomar', 'to get': 'obtener', 'to make': 'hacer', 'to give': 'dar'
+        'hello': 'hola',
+        'goodbye': 'adiós',
+        'thank you': 'gracias',
+        'please': 'por favor',
+        'yes': 'sí',
+        'no': 'no',
+        'water': 'agua',
+        'food': 'comida',
+        'house': 'casa',
+        'car': 'coche',
+        'book': 'libro',
+        'computer': 'computadora',
+        'phone': 'teléfono',
+        'money': 'dinero',
+        'time': 'tiempo',
+        'day': 'día',
+        'night': 'noche',
+        'good morning': 'buenos días',
+        'good afternoon': 'buenas tardes',
+        'good evening': 'buenas noches',
+        'how are you': '¿cómo estás?',
+        'what is your name': '¿cómo te llamas?',
+        'where is': '¿dónde está',
+        'how much': '¿cuánto cuesta',
+        'excuse me': 'disculpe',
+        'i am': 'yo soy',
+        'you are': 'tú eres',
+        'he is': 'él es',
+        'she is': 'ella es',
+        'we are': 'nosotros somos',
+        'they are': 'ellos son',
+        'i love you': 'te amo',
+        'sorry': 'lo siento'
       },
-      
       'en-fr': {
-        // Basic words
-        'hello': 'bonjour', 'goodbye': 'au revoir', 'thank you': 'merci',
-        'please': 's\\'il vous plaît', 'yes': 'oui', 'no': 'non', 'water': 'eau',
-        'food': 'nourriture', 'house': 'maison', 'car': 'voiture', 'book': 'livre',
-        'computer': 'ordinateur', 'phone': 'téléphone', 'money': 'argent',
-        'time': 'temps', 'day': 'jour', 'night': 'nuit', 'good': 'bon',
-        'bad': 'mauvais', 'big': 'grand', 'small': 'petit', 'happy': 'heureux',
-        'sad': 'triste', 'love': 'amour', 'friend': 'ami', 'family': 'famille',
-        'work': 'travail', 'school': 'école', 'help': 'aide', 'beautiful': 'beau',
-        'important': 'important', 'difficult': 'difficile', 'easy': 'facile',
-        
-        // Common phrases
-        'good morning': 'bonjour', 'good afternoon': 'bon après-midi',
-        'good evening': 'bonsoir', 'how are you': 'comment allez-vous?',
-        'what is your name': 'quel est votre nom?', 'where is': 'où est',
-        'how much': 'combien coûte', 'excuse me': 'excusez-moi',
-        'i am sorry': 'je suis désolé', 'i love you': 'je t\\'aime'
+        'hello': 'bonjour',
+        'goodbye': 'au revoir',
+        'thank you': 'merci',
+        'please': 's\\'il vous plaît',
+        'yes': 'oui',
+        'no': 'non',
+        'water': 'eau',
+        'food': 'nourriture',
+        'house': 'maison',
+        'car': 'voiture',
+        'book': 'livre',
+        'computer': 'ordinateur',
+        'phone': 'téléphone',
+        'money': 'argent',
+        'time': 'temps',
+        'day': 'jour',
+        'night': 'nuit',
+        'good morning': 'bonjour',
+        'good afternoon': 'bon après-midi',
+        'good evening': 'bonsoir',
+        'how are you': 'comment allez-vous?',
+        'what is your name': 'quel est votre nom?',
+        'where is': 'où est',
+        'how much': 'combien coûte',
+        'excuse me': 'excusez-moi',
+        'i am': 'je suis',
+        'you are': 'vous êtes',
+        'he is': 'il est',
+        'she is': 'elle est',
+        'we are': 'nous sommes',
+        'they are': 'ils sont',
+        'i love you': 'je t\\'aime',
+        'sorry': 'désolé'
       },
-      
       'en-de': {
-        // Basic words
-        'hello': 'hallo', 'goodbye': 'auf wiedersehen', 'thank you': 'danke',
-        'please': 'bitte', 'yes': 'ja', 'no': 'nein', 'water': 'wasser',
-        'food': 'essen', 'house': 'haus', 'car': 'auto', 'book': 'buch',
-        'computer': 'computer', 'phone': 'telefon', 'money': 'geld',
-        'time': 'zeit', 'day': 'tag', 'night': 'nacht', 'good': 'gut',
-        'bad': 'schlecht', 'big': 'groß', 'small': 'klein', 'happy': 'glücklich',
-        'sad': 'traurig', 'love': 'liebe', 'friend': 'freund', 'family': 'familie',
-        'work': 'arbeit', 'school': 'schule', 'help': 'hilfe', 'beautiful': 'schön',
-        'important': 'wichtig', 'difficult': 'schwierig', 'easy': 'einfach',
-        
-        // Common phrases
-        'good morning': 'guten morgen', 'good afternoon': 'guten tag',
-        'good evening': 'guten abend', 'how are you': 'wie geht es dir?',
-        'what is your name': 'wie heißt du?', 'where is': 'wo ist',
-        'how much': 'wie viel kostet', 'excuse me': 'entschuldigung',
-        'i am sorry': 'es tut mir leid', 'i love you': 'ich liebe dich'
+        'hello': 'hallo',
+        'goodbye': 'auf wiedersehen',
+        'thank you': 'danke',
+        'please': 'bitte',
+        'yes': 'ja',
+        'no': 'nein',
+        'water': 'wasser',
+        'food': 'essen',
+        'house': 'haus',
+        'car': 'auto',
+        'book': 'buch',
+        'computer': 'computer',
+        'phone': 'telefon',
+        'money': 'geld',
+        'time': 'zeit',
+        'day': 'tag',
+        'night': 'nacht',
+        'good morning': 'guten morgen',
+        'good afternoon': 'guten tag',
+        'good evening': 'guten abend',
+        'how are you': 'wie geht es dir?',
+        'what is your name': 'wie heißt du?',
+        'where is': 'wo ist',
+        'how much': 'wie viel kostet',
+        'excuse me': 'entschuldigung',
+        'i am': 'ich bin',
+        'you are': 'du bist',
+        'he is': 'er ist',
+        'she is': 'sie ist',
+        'we are': 'wir sind',
+        'they are': 'sie sind',
+        'i love you': 'ich liebe dich',
+        'sorry': 'es tut mir leid'
       }
     };
 
-    // Store dictionaries and create reverse mappings
+    // Store dictionaries
     Object.keys(translations).forEach(key => {
       this.dictionary.set(key, translations[key]);
-      
-      // Create reverse mapping
-      const [from, to] = key.split('-');
-      const reverseKey = \`\${to}-\${from}\`;
-      const reverseDict = {};
-      Object.keys(translations[key]).forEach(word => {
-        reverseDict[translations[key][word]] = word;
-      });
-      this.dictionary.set(reverseKey, reverseDict);
     });
+
+    // Create reverse mappings
+    this.dictionary.set('es-en', this.reverseDict(translations['en-es']));
+    this.dictionary.set('fr-en', this.reverseDict(translations['en-fr']));
+    this.dictionary.set('de-en', this.reverseDict(translations['en-de']));
   }
 
-  initializePatterns() {
-    // Grammar and linguistic patterns
-    this.patterns.set('en-es', {
-      // Verb conjugations
-      'i am': 'yo soy', 'you are': 'tú eres', 'he is': 'él es', 'she is': 'ella es',
-      'we are': 'nosotros somos', 'they are': 'ellos son',
-      'i have': 'yo tengo', 'you have': 'tú tienes', 'he has': 'él tiene',
-      
-      // Questions
-      'what time is it': '¿qué hora es?', 'where are you from': '¿de dónde eres?',
-      'how old are you': '¿cuántos años tienes?', 'what do you do': '¿a qué te dedicas?',
-      
-      // Common expressions
-      'nice to meet you': 'mucho gusto', 'you are welcome': 'de nada',
-      'i don\\'t understand': 'no entiendo', 'do you speak english': '¿hablas inglés?'
+  reverseDict(dict) {
+    const reversed = {};
+    Object.keys(dict).forEach(key => {
+      reversed[dict[key]] = key;
     });
-
-    this.patterns.set('en-fr', {
-      // Verb conjugations
-      'i am': 'je suis', 'you are': 'vous êtes', 'he is': 'il est', 'she is': 'elle est',
-      'we are': 'nous sommes', 'they are': 'ils sont',
-      
-      // Questions
-      'what time is it': 'quelle heure est-il?', 'where are you from': 'd\\'où venez-vous?',
-      'how old are you': 'quel âge avez-vous?',
-      
-      // Common expressions
-      'nice to meet you': 'enchanté', 'you are welcome': 'de rien',
-      'i don\\'t understand': 'je ne comprends pas'
-    });
-
-    this.patterns.set('en-de', {
-      // Verb conjugations
-      'i am': 'ich bin', 'you are': 'du bist', 'he is': 'er ist', 'she is': 'sie ist',
-      'we are': 'wir sind', 'they are': 'sie sind',
-      
-      // Questions
-      'what time is it': 'wie spät ist es?', 'where are you from': 'woher kommst du?',
-      'how old are you': 'wie alt bist du?',
-      
-      // Common expressions
-      'nice to meet you': 'freut mich', 'you are welcome': 'bitte schön',
-      'i don\\'t understand': 'ich verstehe nicht'
-    });
+    return reversed;
   }
 
-  async translate(text, fromLang = 'auto', toLang = 'en') {
-    try {
-      if (!text || text.trim() === '') {
-        return { translation: '', confidence: 0, detected: fromLang };
-      }
-
-      const cleanText = text.toLowerCase().trim();
-      const cacheKey = \`\${fromLang}-\${toLang}-\${cleanText}\`;
-      
-      // Check cache first
-      if (this.cache.has(cacheKey)) {
-        return this.cache.get(cacheKey);
-      }
-
-      // Auto-detect language if needed
-      if (fromLang === 'auto') {
-        fromLang = this.languageDetector.detect(text);
-      }
-
-      // Skip translation if same language
-      if (fromLang === toLang) {
-        return { translation: text, confidence: 1, detected: fromLang };
-      }
-
-      const langPair = \`\${fromLang}-\${toLang}\`;
-      let translation = '';
-      let confidence = 0;
-
-      // Try pattern matching first (for phrases)
-      if (this.patterns.has(langPair)) {
-        const patterns = this.patterns.get(langPair);
-        for (const [pattern, trans] of Object.entries(patterns)) {
-          if (cleanText.includes(pattern.toLowerCase())) {
-            translation = trans;
-            confidence = 0.95;
-            break;
-          }
-        }
-      }
-
-      // If no pattern match, try dictionary lookup
-      if (!translation && this.dictionary.has(langPair)) {
-        const result = this.dictionaryTranslate(text, langPair);
-        translation = result.translation;
-        confidence = result.confidence;
-      }
-
-      // Apply linguistic rules if confidence is low
-      if (confidence < 0.5) {
-        const ruleResult = this.applyLinguisticRules(text, fromLang, toLang);
-        if (ruleResult.confidence > confidence) {
-          translation = ruleResult.translation;
-          confidence = ruleResult.confidence;
-        }
-      }
-
-      // Fallback to original text
-      if (!translation || confidence < 0.1) {
-        translation = text;
-        confidence = 0;
-      }
-
-      const result = {
-        translation: translation,
-        confidence: Math.min(confidence, 1),
-        detected: fromLang,
-        originalText: text
-      };
-
-      // Cache the result
-      this.cache.set(cacheKey, result);
-      
-      // Limit cache size
-      if (this.cache.size > 1000) {
-        const firstKey = this.cache.keys().next().value;
-        this.cache.delete(firstKey);
-      }
-
-      return result;
-
-    } catch (error) {
-      console.error('Translation error:', error);
-      return {
-        translation: text,
-        confidence: 0,
-        detected: fromLang,
-        error: error.message
-      };
-    }
-  }
-
-  dictionaryTranslate(text, langPair) {
-    const dict = this.dictionary.get(langPair);
-    const words = text.split(/\\s+/);
-    const translatedWords = [];
-    let matchedWords = 0;
-
-    words.forEach(word => {
-      const cleanWord = word.toLowerCase().replace(/[^\\w\\s]/g, '');
-      
-      if (dict[cleanWord]) {
-        translatedWords.push(dict[cleanWord]);
-        matchedWords++;
-      } else if (dict[text.toLowerCase().trim()]) {
-        // Check for full phrase match
-        return { translation: dict[text.toLowerCase().trim()], confidence: 0.9 };
-      } else {
-        // Try partial matches
-        let found = false;
-        for (const [key, value] of Object.entries(dict)) {
-          if (key.includes(cleanWord) || cleanWord.includes(key)) {
-            translatedWords.push(value);
-            matchedWords += 0.5;
-            found = true;
-            break;
-          }
-        }
-        if (!found) {
-          translatedWords.push(word);
-        }
-      }
-    });
-
-    return {
-      translation: translatedWords.join(' '),
-      confidence: matchedWords / words.length
+  detectLanguage(text) {
+    const lowerText = text.toLowerCase().trim();
+    
+    // Language patterns
+    const patterns = {
+      'es': /[ñáéíóúü]|\\b(el|la|de|que|y|en|un|es|se|no|te|lo|le|da|su|por|son|con|para|al|del|los|las|una|está|como|más|pero|sus|ha|muy|hasta|desde|cuando|ellos|ellas|nosotros)\\b/i,
+      'fr': /[àâäéèêëïîôöùûüÿç]|\\b(le|de|et|à|un|il|être|avoir|que|pour|dans|ce|son|une|sur|avec|ne|se|pas|tout|plus|par|grand|mais|du|au|nous|vous|ils|elles)\\b/i,
+      'de': /[äöüß]|\\b(der|die|und|in|den|von|zu|das|mit|sich|des|auf|für|ist|im|dem|nicht|ein|eine|als|auch|es|an|werden|aus|er|hat|dass|sie|nach|wird|bei|einer|um|am|sind|noch|wie|einem|über|einen|so|Sie|zum|war|haben|nur|oder|aber|vor|zur|bis)\\b/i
     };
+
+    for (const [lang, pattern] of Object.entries(patterns)) {
+      if (pattern.test(lowerText)) {
+        return lang;
+      }
+    }
+
+    return 'en'; // Default to English
   }
 
-  applyLinguisticRules(text, fromLang, toLang) {
+  translate(text, fromLang = 'auto', toLang = 'en') {
+    const cleanText = text.toLowerCase().trim();
+    const cacheKey = \`\${fromLang}-\${toLang}-\${cleanText}\`;
+
+    // Check cache
+    if (this.cache.has(cacheKey)) {
+      return this.cache.get(cacheKey);
+    }
+
+    // Auto-detect language
+    if (fromLang === 'auto') {
+      fromLang = this.detectLanguage(text);
+    }
+
+    if (fromLang === toLang) {
+      return { translation: text, confidence: 1, detected: fromLang };
+    }
+
+    const langPair = \`\${fromLang}-\${toLang}\`;
+    let translation = '';
+    let confidence = 0;
+
+    // Try exact phrase match
+    if (this.dictionary.has(langPair)) {
+      const dict = this.dictionary.get(langPair);
+      if (dict[cleanText]) {
+        translation = dict[cleanText];
+        confidence = 0.95;
+      } else {
+        // Word-by-word translation
+        const words = cleanText.split(/\\s+/);
+        const translatedWords = [];
+        let matchedWords = 0;
+
+        words.forEach(word => {
+          const cleanWord = word.replace(/[^\\w]/g, '');
+          if (dict[cleanWord]) {
+            translatedWords.push(dict[cleanWord]);
+            matchedWords++;
+          } else {
+            // Apply linguistic transformations
+            const transformed = this.applyLinguisticRules(cleanWord, fromLang, toLang);
+            translatedWords.push(transformed);
+            if (transformed !== cleanWord) matchedWords += 0.3;
+          }
+        });
+
+        translation = translatedWords.join(' ');
+        confidence = matchedWords / words.length;
+      }
+    }
+
+    // Fallback to original text if no translation found
+    if (!translation || confidence < 0.1) {
+      translation = text;
+      confidence = 0;
+    }
+
+    const result = { translation, confidence, detected: fromLang };
+    
+    // Cache result
+    this.cache.set(cacheKey, result);
+    if (this.cache.size > 1000) {
+      const firstKey = this.cache.keys().next().value;
+      this.cache.delete(firstKey);
+    }
+
+    return result;
+  }
+
+  applyLinguisticRules(word, fromLang, toLang) {
     const rules = {
       'en-es': [
-        { pattern: /tion$/, replacement: 'ción', confidence: 0.7 },
-        { pattern: /ly$/, replacement: 'mente', confidence: 0.6 },
-        { pattern: /ity$/, replacement: 'idad', confidence: 0.7 },
-        { pattern: /ing$/, replacement: 'ando', confidence: 0.5 },
-        { pattern: /ful$/, replacement: 'lleno', confidence: 0.4 }
+        { pattern: /tion$/, replacement: 'ción' },
+        { pattern: /ly$/, replacement: 'mente' },
+        { pattern: /ity$/, replacement: 'idad' },
+        { pattern: /ing$/, replacement: 'ando' }
       ],
       'en-fr': [
-        { pattern: /tion$/, replacement: 'tion', confidence: 0.8 },
-        { pattern: /ly$/, replacement: 'ment', confidence: 0.6 },
-        { pattern: /ity$/, replacement: 'ité', confidence: 0.7 },
-        { pattern: /ing$/, replacement: 'ant', confidence: 0.5 }
+        { pattern: /tion$/, replacement: 'tion' },
+        { pattern: /ly$/, replacement: 'ment' },
+        { pattern: /ity$/, replacement: 'ité' },
+        { pattern: /ing$/, replacement: 'ant' }
       ],
       'en-de': [
-        { pattern: /tion$/, replacement: 'ung', confidence: 0.6 },
-        { pattern: /ly$/, replacement: 'lich', confidence: 0.6 },
-        { pattern: /ity$/, replacement: 'ität', confidence: 0.7 },
-        { pattern: /ing$/, replacement: 'end', confidence: 0.5 }
+        { pattern: /tion$/, replacement: 'ung' },
+        { pattern: /ly$/, replacement: 'lich' },
+        { pattern: /ity$/, replacement: 'ität' },
+        { pattern: /ing$/, replacement: 'end' }
       ]
     };
 
     const langPair = \`\${fromLang}-\${toLang}\`;
     if (rules[langPair]) {
-      let result = text;
-      let maxConfidence = 0;
-      
-      rules[langPair].forEach(rule => {
-        if (rule.pattern.test(text)) {
-          result = text.replace(rule.pattern, rule.replacement);
-          maxConfidence = Math.max(maxConfidence, rule.confidence);
+      for (const rule of rules[langPair]) {
+        if (rule.pattern.test(word)) {
+          return word.replace(rule.pattern, rule.replacement);
         }
-      });
-      
-      return { translation: result, confidence: maxConfidence };
+      }
     }
 
-    return { translation: text, confidence: 0 };
+    return word;
   }
 
   getSupportedLanguages() {
@@ -1577,357 +1114,67 @@ class PureTranslationEngine {
       'en': 'English',
       'es': 'Spanish',
       'fr': 'French',
-      'de': 'German',
-      'it': 'Italian',
-      'pt': 'Portuguese',
-      'ru': 'Russian',
-      'ja': 'Japanese',
-      'ko': 'Korean',
-      'zh': 'Chinese',
-      'ar': 'Arabic',
-      'hi': 'Hindi',
-      'nl': 'Dutch',
-      'sv': 'Swedish',
-      'da': 'Danish',
-      'no': 'Norwegian',
-      'fi': 'Finnish',
-      'pl': 'Polish',
-      'cs': 'Czech',
-      'hu': 'Hungarian'
+      'de': 'German'
     };
   }
 }
 
-// Language Detection System
-class LanguageDetector {
-  constructor() {
-    this.patterns = {
-      'es': {
-        chars: /[ñáéíóúü]/i,
-        words: ['el', 'la', 'de', 'que', 'y', 'en', 'un', 'es', 'se', 'no', 'te', 'lo', 'le', 'da', 'su', 'por', 'son', 'con', 'para', 'al', 'del', 'los', 'las', 'una', 'está', 'como', 'más', 'pero', 'sus', 'ha', 'muy', 'hasta', 'desde', 'cuando', 'ellos', 'ellas', 'nosotros']
-      },
-      'fr': {
-        chars: /[àâäéèêëïîôöùûüÿç]/i,
-        words: ['le', 'de', 'et', 'à', 'un', 'il', 'être', 'avoir', 'que', 'pour', 'dans', 'ce', 'son', 'une', 'sur', 'avec', 'ne', 'se', 'pas', 'tout', 'plus', 'par', 'grand', 'mais', 'du', 'au', 'nous', 'vous', 'ils', 'elles']
-      },
-      'de': {
-        chars: /[äöüß]/i,
-        words: ['der', 'die', 'und', 'in', 'den', 'von', 'zu', 'das', 'mit', 'sich', 'des', 'auf', 'für', 'ist', 'im', 'dem', 'nicht', 'ein', 'eine', 'als', 'auch', 'es', 'an', 'werden', 'aus', 'er', 'hat', 'dass', 'sie', 'nach', 'wird', 'bei', 'einer', 'um', 'am', 'sind', 'noch', 'wie', 'einem', 'über', 'einen', 'so', 'Sie', 'zum', 'war', 'haben', 'nur', 'oder', 'aber', 'vor', 'zur', 'bis']
-      },
-      'en': {
-        chars: /[a-z]/i,
-        words: ['the', 'be', 'to', 'of', 'and', 'a', 'in', 'that', 'have', 'i', 'it', 'for', 'not', 'on', 'with', 'he', 'as', 'you', 'do', 'at', 'this', 'but', 'his', 'by', 'from', 'they', 'she', 'or', 'an', 'will', 'my', 'one', 'all', 'would', 'there', 'their']
-      }
-    };
-  }
+// Initialize translation engine
+const translationEngine = new TranslationEngine();
 
-  detect(text) {
-    const cleanText = text.toLowerCase().trim();
-    const words = cleanText.split(/\\s+/);
-    const scores = {};
+// Context menu setup
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.contextMenus.create({
+    id: 'translate-selection',
+    title: 'Translate "%s"',
+    contexts: ['selection']
+  });
 
-    // Initialize scores
-    Object.keys(this.patterns).forEach(lang => {
-      scores[lang] = 0;
-    });
+  chrome.contextMenus.create({
+    id: 'translate-to-spanish',
+    title: 'Translate to Spanish',
+    contexts: ['selection'],
+    parentId: 'translate-selection'
+  });
 
-    // Character-based detection
-    Object.keys(this.patterns).forEach(lang => {
-      if (this.patterns[lang].chars.test(cleanText)) {
-        scores[lang] += 2;
-      }
-    });
+  chrome.contextMenus.create({
+    id: 'translate-to-french',
+    title: 'Translate to French',
+    contexts: ['selection'],
+    parentId: 'translate-selection'
+  });
 
-    // Word-based detection
-    Object.keys(this.patterns).forEach(lang => {
-      this.patterns[lang].words.forEach(indicator => {
-        if (words.includes(indicator)) {
-          scores[lang] += 1;
-        }
-      });
-    });
+  chrome.contextMenus.create({
+    id: 'translate-to-german',
+    title: 'Translate to German',
+    contexts: ['selection'],
+    parentId: 'translate-selection'
+  });
 
-    // Find language with highest score
-    let detectedLang = 'en'; // default
-    let maxScore = 0;
-    Object.keys(scores).forEach(lang => {
-      if (scores[lang] > maxScore) {
-        maxScore = scores[lang];
-        detectedLang = lang;
-      }
-    });
+  chrome.contextMenus.create({
+    id: 'translate-to-english',
+    title: 'Translate to English',
+    contexts: ['selection'],
+    parentId: 'translate-selection'
+  });
 
-    return detectedLang;
-  }
-}
+  chrome.contextMenus.create({
+    id: 'separator',
+    type: 'separator',
+    contexts: ['selection'],
+    parentId: 'translate-selection'
+  });
 
-// Export for use in other files
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { PureTranslationEngine, LanguageDetector };
-}`;
+  chrome.contextMenus.create({
+    id: 'translate-page',
+    title: 'Translate Page',
+    contexts: ['page']
+  });
+});
 
-const backgroundContent = `// Pure Translator Background Service Worker
-importScripts('translation-engine.js');
-
-class ExtensionBackground {
-  constructor() {
-    this.translationEngine = new PureTranslationEngine();
-    this.initializeExtension();
-  }
-
-  async initializeExtension() {
-    // Set up context menus
-    this.createContextMenus();
-    
-    // Set up message listeners
-    this.setupMessageListeners();
-    
-    // Set up storage listeners
-    this.setupStorageListeners();
-    
-    console.log('Pure Translator Extension initialized');
-  }
-
-  createContextMenus() {
-    chrome.contextMenus.removeAll(() => {
-      // Create main translation menu
-      chrome.contextMenus.create({
-        id: 'translate-selection',
-        title: 'Translate "%s"',
-        contexts: ['selection'],
-        visible: true
-      });
-
-      // Create language-specific menus
-      chrome.contextMenus.create({
-        id: 'translate-to-spanish',
-        title: 'Translate to Spanish',
-        contexts: ['selection'],
-        parentId: 'translate-selection'
-      });
-
-      chrome.contextMenus.create({
-        id: 'translate-to-french',
-        title: 'Translate to French',
-        contexts: ['selection'],
-        parentId: 'translate-selection'
-      });
-
-      chrome.contextMenus.create({
-        id: 'translate-to-german',
-        title: 'Translate to German',
-        contexts: ['selection'],
-        parentId: 'translate-selection'
-      });
-
-      chrome.contextMenus.create({
-        id: 'translate-to-english',
-        title: 'Translate to English',
-        contexts: ['selection'],
-        parentId: 'translate-selection'
-      });
-
-      // Separator
-      chrome.contextMenus.create({
-        id: 'separator1',
-        type: 'separator',
-        contexts: ['selection'],
-        parentId: 'translate-selection'
-      });
-
-      // Page translation
-      chrome.contextMenus.create({
-        id: 'translate-page',
-        title: 'Translate entire page',
-        contexts: ['page']
-      });
-    });
-  }
-
-  setupMessageListeners() {
-    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-      this.handleMessage(request, sender, sendResponse);
-      return true; // Keep message channel open for async response
-    });
-  }
-
-  async handleMessage(request, sender, sendResponse) {
-    try {
-      switch (request.action) {
-        case 'translate':
-          const result = await this.translateText(
-            request.text,
-            request.fromLang || 'auto',
-            request.toLang || 'en'
-          );
-          sendResponse({ success: true, result });
-          break;
-
-        case 'detectLanguage':
-          const detected = this.translationEngine.languageDetector.detect(request.text);
-          sendResponse({ success: true, language: detected });
-          break;
-
-        case 'getSupportedLanguages':
-          const languages = this.translationEngine.getSupportedLanguages();
-          sendResponse({ success: true, languages });
-          break;
-
-        case 'getTranslationHistory':
-          const history = await this.getTranslationHistory();
-          sendResponse({ success: true, history });
-          break;
-
-        case 'clearHistory':
-          await this.clearTranslationHistory();
-          sendResponse({ success: true });
-          break;
-
-        case 'saveToHistory':
-          await this.saveToHistory(request.translation);
-          sendResponse({ success: true });
-          break;
-
-        case 'updateSettings':
-          await this.updateSettings(request.settings);
-          sendResponse({ success: true });
-          break;
-
-        case 'getSettings':
-          const settings = await this.getSettings();
-          sendResponse({ success: true, settings });
-          break;
-
-        default:
-          sendResponse({ success: false, error: 'Unknown action' });
-      }
-    } catch (error) {
-      console.error('Background script error:', error);
-      sendResponse({ success: false, error: error.message });
-    }
-  }
-
-  async translateText(text, fromLang, toLang) {
-    const result = await this.translationEngine.translate(text, fromLang, toLang);
-    
-    // Save to history if enabled
-    const settings = await this.getSettings();
-    if (settings.saveHistory) {
-      await this.saveToHistory({
-        originalText: text,
-        translatedText: result.translation,
-        fromLang: result.detected,
-        toLang: toLang,
-        confidence: result.confidence,
-        url: 'background'
-      });
-    }
-    
-    return result;
-  }
-
-  setupStorageListeners() {
-    chrome.storage.onChanged.addListener((changes, areaName) => {
-      if (areaName === 'sync') {
-        if (changes.userSettings) {
-          this.onSettingsChanged(changes.userSettings.newValue);
-        }
-      }
-    });
-  }
-
-  async onSettingsChanged(newSettings) {
-    if (newSettings.enableContextMenu === false) {
-      chrome.contextMenus.removeAll();
-    } else {
-      this.createContextMenus();
-    }
-  }
-
-  async saveToHistory(translation) {
-    try {
-      const historyItem = {
-        id: Date.now().toString(),
-        originalText: translation.originalText,
-        translatedText: translation.translatedText,
-        fromLang: translation.fromLang,
-        toLang: translation.toLang,
-        confidence: translation.confidence,
-        timestamp: new Date().toISOString(),
-        url: translation.url || 'unknown'
-      };
-
-      const { translationHistory = [] } = await chrome.storage.local.get('translationHistory');
-      
-      translationHistory.unshift(historyItem);
-      
-      // Limit history to 100 items
-      if (translationHistory.length > 100) {
-        translationHistory.splice(100);
-      }
-
-      await chrome.storage.local.set({ translationHistory });
-    } catch (error) {
-      console.error('Error saving to history:', error);
-    }
-  }
-
-  async getTranslationHistory() {
-    try {
-      const { translationHistory = [] } = await chrome.storage.local.get('translationHistory');
-      return translationHistory;
-    } catch (error) {
-      console.error('Error getting history:', error);
-      return [];
-    }
-  }
-
-  async clearTranslationHistory() {
-    try {
-      await chrome.storage.local.remove('translationHistory');
-    } catch (error) {
-      console.error('Error clearing history:', error);
-    }
-  }
-
-  async getSettings() {
-    try {
-      const defaultSettings = {
-        autoDetectLanguage: true,
-        showConfidence: true,
-        enableContextMenu: true,
-        defaultTargetLanguage: 'en',
-        enablePageTranslation: true,
-        saveHistory: true,
-        enableHoverTranslation: false,
-        darkMode: false
-      };
-
-      const { userSettings = {} } = await chrome.storage.sync.get('userSettings');
-      return { ...defaultSettings, ...userSettings };
-    } catch (error) {
-      console.error('Error getting settings:', error);
-      return {};
-    }
-  }
-
-  async updateSettings(newSettings) {
-    try {
-      const currentSettings = await this.getSettings();
-      const updatedSettings = { ...currentSettings, ...newSettings };
-      
-      await chrome.storage.sync.set({ userSettings: updatedSettings });
-      
-      this.onSettingsChanged(updatedSettings);
-    } catch (error) {
-      console.error('Error updating settings:', error);
-    }
-  }
-}
-
-// Context menu click handler
+// Handle context menu clicks
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
-  const targetLangMap = {
+  const targetLangs = {
     'translate-to-spanish': 'es',
     'translate-to-french': 'fr',
     'translate-to-german': 'de',
@@ -1938,61 +1185,131 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     chrome.tabs.sendMessage(tab.id, {
       action: 'translatePage'
     });
-  } else if (targetLangMap[info.menuItemId]) {
-    const toLang = targetLangMap[info.menuItemId];
-    
+  } else if (targetLangs[info.menuItemId]) {
+    const result = translationEngine.translate(
+      info.selectionText,
+      'auto',
+      targetLangs[info.menuItemId]
+    );
+
     chrome.tabs.sendMessage(tab.id, {
       action: 'showTranslation',
-      text: info.selectionText,
-      toLang: toLang
+      originalText: info.selectionText,
+      result: result
     });
   }
 });
 
-// Initialize the background service
-const extensionBackground = new ExtensionBackground();
+// Handle messages from content script and popup
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  try {
+    switch (request.action) {
+      case 'translate':
+        const result = translationEngine.translate(
+          request.text,
+          request.fromLang || 'auto',
+          request.toLang || 'en'
+        );
+        sendResponse({ success: true, result });
+        break;
 
-// Handle extension installation
-chrome.runtime.onInstalled.addListener((details) => {
-  if (details.reason === 'install') {
-    chrome.storage.sync.set({
-      userSettings: {
-        autoDetectLanguage: true,
-        enableContextMenu: true,
-        defaultTargetLanguage: 'en',
-        saveHistory: true,
-        darkMode: false
-      }
-    });
+      case 'detectLanguage':
+        const detected = translationEngine.detectLanguage(request.text);
+        sendResponse({ success: true, language: detected });
+        break;
+
+      case 'getSupportedLanguages':
+        const languages = translationEngine.getSupportedLanguages();
+        sendResponse({ success: true, languages });
+        break;
+
+      case 'saveToHistory':
+        saveTranslationHistory(request.translation);
+        sendResponse({ success: true });
+        break;
+
+      case 'getHistory':
+        getTranslationHistory().then(history => {
+          sendResponse({ success: true, history });
+        });
+        return true; // Keep message channel open
+
+      case 'clearHistory':
+        clearTranslationHistory().then(() => {
+          sendResponse({ success: true });
+        });
+        return true;
+
+      default:
+        sendResponse({ success: false, error: 'Unknown action' });
+    }
+  } catch (error) {
+    sendResponse({ success: false, error: error.message });
   }
-});`;
+});
+
+// Translation history management
+async function saveTranslationHistory(translation) {
+  try {
+    const { translationHistory = [] } = await chrome.storage.local.get('translationHistory');
+    
+    const historyItem = {
+      id: Date.now().toString(),
+      originalText: translation.originalText,
+      translatedText: translation.translatedText,
+      fromLang: translation.fromLang,
+      toLang: translation.toLang,
+      confidence: translation.confidence,
+      timestamp: new Date().toISOString(),
+      url: translation.url
+    };
+
+    translationHistory.unshift(historyItem);
+    
+    // Keep only last 100 translations
+    if (translationHistory.length > 100) {
+      translationHistory.splice(100);
+    }
+
+    await chrome.storage.local.set({ translationHistory });
+  } catch (error) {
+    console.error('Error saving translation history:', error);
+  }
+}
+
+async function getTranslationHistory() {
+  try {
+    const { translationHistory = [] } = await chrome.storage.local.get('translationHistory');
+    return translationHistory;
+  } catch (error) {
+    console.error('Error getting translation history:', error);
+    return [];
+  }
+}
+
+async function clearTranslationHistory() {
+  try {
+    await chrome.storage.local.remove('translationHistory');
+  } catch (error) {
+    console.error('Error clearing translation history:', error);
+  }
+}`;
 
 const contentContent = `// Pure Translator Content Script
 class TranslationUI {
   constructor() {
-    this.isInitialized = false;
+    this.isActive = false;
     this.floatingButton = null;
     this.translationPopup = null;
     this.pageTranslationActive = false;
     this.originalTexts = new Map();
-    this.settings = {};
-    
-    this.init();
+    this.initializeUI();
+    this.setupEventListeners();
   }
 
-  async init() {
-    if (this.isInitialized) return;
-    
-    try {
-      this.settings = await this.getSettings();
-      this.setupEventListeners();
-      this.createUI();
-      
-      this.isInitialized = true;
-      console.log('Pure Translator content script initialized');
-    } catch (error) {
-      console.error('Failed to initialize content script:', error);
-    }
+  initializeUI() {
+    this.createFloatingButton();
+    this.createTranslationPopup();
   }
 
   setupEventListeners() {
@@ -2024,11 +1341,6 @@ class TranslationUI {
         this.hideAllUI();
       }
     });
-  }
-
-  createUI() {
-    this.createFloatingButton();
-    this.createTranslationPopup();
   }
 
   createFloatingButton() {
@@ -2091,7 +1403,7 @@ class TranslationUI {
         action: 'translate',
         text: selectedText,
         fromLang: 'auto',
-        toLang: this.settings.defaultTargetLanguage || 'en'
+        toLang: 'en'
       });
 
       if (response.success) {
@@ -2107,34 +1419,27 @@ class TranslationUI {
   showTranslationPopup(originalText, result, rect) {
     const popup = this.translationPopup;
     
-    const confidence = Math.round(result.confidence * 100);
-    const detectedLang = this.getLanguageName(result.detected);
-    const targetLang = this.getLanguageName(this.settings.defaultTargetLanguage || 'en');
-    
     popup.innerHTML = \`
       <div class="popup-header">
         <span class="popup-title">Translation</span>
         <button class="popup-close">×</button>
       </div>
       <div class="popup-content">
-        <div class="language-info">\${detectedLang} → \${targetLang}</div>
         <div class="original-text">
-          <div class="text-label">Original:</div>
+          <div class="text-label">Original (\${result.detected.toUpperCase()}):</div>
           <div class="text-content">\${this.escapeHtml(originalText)}</div>
         </div>
         <div class="translation-arrow">↓</div>
         <div class="translated-text">
-          <div class="text-label">Translation:</div>
+          <div class="text-label">Translation (EN):</div>
           <div class="text-content">\${this.escapeHtml(result.translation)}</div>
         </div>
-        \${this.settings.showConfidence ? \`
-          <div class="confidence-info">
-            <div class="confidence-label">Confidence: \${confidence}%</div>
-            <div class="confidence-bar">
-              <div class="confidence-fill" style="width: \${confidence}%"></div>
-            </div>
+        <div class="confidence-bar">
+          <div class="confidence-label">Confidence: \${Math.round(result.confidence * 100)}%</div>
+          <div class="confidence-meter">
+            <div class="confidence-fill" style="width: \${result.confidence * 100}%"></div>
           </div>
-        \` : ''}
+        </div>
       </div>
       <div class="popup-actions">
         <button class="action-btn copy-btn">📋 Copy</button>
@@ -2147,6 +1452,7 @@ class TranslationUI {
     let left = rect.left + window.scrollX;
     let top = rect.bottom + window.scrollY + 10;
 
+    // Adjust if popup goes off screen
     if (left + 320 > window.innerWidth) {
       left = window.innerWidth - 320 - 10;
     }
@@ -2207,7 +1513,7 @@ class TranslationUI {
               action: 'translate',
               text: text,
               fromLang: 'auto',
-              toLang: this.settings.defaultTargetLanguage || 'en'
+              toLang: 'en'
             }).then(response => {
               if (response.success && response.result.translation !== text) {
                 node.textContent = response.result.translation;
@@ -2305,33 +1611,17 @@ class TranslationUI {
   handleMessage(message) {
     switch (message.action) {
       case 'showTranslation':
-        this.handleContextMenuTranslation(message);
-        break;
-      case 'translatePage':
-        this.translatePage();
-        break;
-    }
-  }
-
-  async handleContextMenuTranslation(message) {
-    try {
-      const response = await chrome.runtime.sendMessage({
-        action: 'translate',
-        text: message.text,
-        fromLang: 'auto',
-        toLang: message.toLang
-      });
-
-      if (response.success) {
         const selection = window.getSelection();
         const rect = selection.rangeCount > 0 ? 
           selection.getRangeAt(0).getBoundingClientRect() : 
-          { left: 100, top: 100, bottom: 120, width: 0 };
+          { left: 100, top: 100, bottom: 120 };
         
-        this.showTranslationPopup(message.text, response.result, rect);
-      }
-    } catch (error) {
-      this.showError('Translation failed: ' + error.message);
+        this.showTranslationPopup(message.originalText, message.result, rect);
+        break;
+        
+      case 'translatePage':
+        this.translatePage();
+        break;
     }
   }
 
@@ -2354,7 +1644,7 @@ class TranslationUI {
           originalText,
           translatedText: result.translation,
           fromLang: result.detected,
-          toLang: this.settings.defaultTargetLanguage || 'en',
+          toLang: 'en',
           confidence: result.confidence,
           url: window.location.href
         }
@@ -2363,15 +1653,6 @@ class TranslationUI {
       this.showNotification('Translation saved to history!');
     } catch (error) {
       this.showError('Failed to save translation');
-    }
-  }
-
-  async getSettings() {
-    try {
-      const response = await chrome.runtime.sendMessage({ action: 'getSettings' });
-      return response.success ? response.settings : {};
-    } catch (error) {
-      return {};
     }
   }
 
@@ -2387,16 +1668,6 @@ class TranslationUI {
   hideAllUI() {
     this.hideFloatingButton();
     this.hideTranslationPopup();
-  }
-
-  getLanguageName(code) {
-    const languages = {
-      'en': 'English', 'es': 'Spanish', 'fr': 'French', 'de': 'German',
-      'it': 'Italian', 'pt': 'Portuguese', 'ru': 'Russian', 'ja': 'Japanese',
-      'ko': 'Korean', 'zh': 'Chinese', 'ar': 'Arabic', 'hi': 'Hindi',
-      'auto': 'Auto-detect'
-    };
-    return languages[code] || code;
   }
 
   escapeHtml(text) {
@@ -2451,7 +1722,6 @@ const contentCSS = `/* Pure Translator Content Script Styles */
   transition: all 0.3s ease;
   border: 2px solid white;
   color: white;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
 }
 
 #pure-translator-floating-btn:hover {
@@ -2511,14 +1781,6 @@ const contentCSS = `/* Pure Translator Content Script Styles */
   padding: 16px;
 }
 
-#pure-translator-popup .language-info {
-  text-align: center;
-  font-size: 12px;
-  color: #666;
-  margin-bottom: 12px;
-  font-weight: 500;
-}
-
 #pure-translator-popup .original-text,
 #pure-translator-popup .translated-text {
   margin-bottom: 12px;
@@ -2560,7 +1822,7 @@ const contentCSS = `/* Pure Translator Content Script Styles */
   margin: 8px 0;
 }
 
-#pure-translator-popup .confidence-info {
+#pure-translator-popup .confidence-bar {
   margin-top: 12px;
 }
 
@@ -2570,7 +1832,7 @@ const contentCSS = `/* Pure Translator Content Script Styles */
   margin-bottom: 4px;
 }
 
-#pure-translator-popup .confidence-bar {
+#pure-translator-popup .confidence-meter {
   height: 4px;
   background: #e0e0e0;
   border-radius: 2px;
@@ -2752,7 +2014,7 @@ const contentCSS = `/* Pure Translator Content Script Styles */
     color: #f9fafb;
   }
   
-  #pure-translator-popup .confidence-bar {
+  #pure-translator-popup .confidence-meter {
     background: #374151;
   }
 }
@@ -2796,8 +2058,6 @@ const popupHTML = `<!DOCTYPE html>
             <option value="es">Spanish</option>
             <option value="fr">French</option>
             <option value="de">German</option>
-            <option value="it">Italian</option>
-            <option value="pt">Portuguese</option>
           </select>
           <button id="swap-languages" class="swap-btn" title="Swap languages">⇄</button>
           <select id="target-lang" class="lang-select">
@@ -2805,8 +2065,6 @@ const popupHTML = `<!DOCTYPE html>
             <option value="es">Spanish</option>
             <option value="fr">French</option>
             <option value="de">German</option>
-            <option value="it">Italian</option>
-            <option value="pt">Portuguese</option>
           </select>
         </div>
         
@@ -2884,40 +2142,6 @@ const popupHTML = `<!DOCTYPE html>
         </div>
       </div>
     </div>
-
-    <!-- Settings Section -->
-    <div class="section">
-      <h2>Settings</h2>
-      <div class="settings-container">
-        <div class="setting-item">
-          <label for="show-confidence">
-            <input type="checkbox" id="show-confidence" checked>
-            Show translation confidence
-          </label>
-        </div>
-        <div class="setting-item">
-          <label for="save-history">
-            <input type="checkbox" id="save-history" checked>
-            Save translation history
-          </label>
-        </div>
-        <div class="setting-item">
-          <label for="enable-context-menu">
-            <input type="checkbox" id="enable-context-menu" checked>
-            Enable context menu
-          </label>
-        </div>
-        <div class="setting-item">
-          <label for="default-target-lang">Default target language:</label>
-          <select id="default-target-lang" class="lang-select small">
-            <option value="en">English</option>
-            <option value="es">Spanish</option>
-            <option value="fr">French</option>
-            <option value="de">German</option>
-          </select>
-        </div>
-      </div>
-    </div>
   </div>
 
   <!-- Footer -->
@@ -2927,7 +2151,7 @@ const popupHTML = `<!DOCTYPE html>
     </div>
     <div class="links">
       <a href="#" id="help-link">Help</a>
-      <a href="#" id="about-link">About</a>
+      <a href="#" id="feedback-link">About</a>
     </div>
   </div>
 
@@ -3029,11 +2253,6 @@ body {
   outline: none;
   border-color: #4285f4;
   box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
-}
-
-.lang-select.small {
-  flex: none;
-  width: 120px;
 }
 
 .swap-btn {
@@ -3336,28 +2555,6 @@ body {
   letter-spacing: 0.5px;
 }
 
-/* Settings Styles */
-.setting-item {
-  margin-bottom: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.setting-item label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  cursor: pointer;
-}
-
-.setting-item input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-}
-
 /* Footer Styles */
 .footer {
   background: white;
@@ -3481,32 +2678,19 @@ class PopupController {
     this.isTranslating = false;
     this.translationHistory = [];
     this.currentTab = null;
-    this.settings = {};
     this.init();
   }
 
   async init() {
     await this.getCurrentTab();
-    await this.loadSettings();
     this.setupEventListeners();
     this.loadHistory();
     this.updateStats();
-    this.updateUI();
   }
 
   async getCurrentTab() {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     this.currentTab = tab;
-  }
-
-  async loadSettings() {
-    try {
-      const response = await chrome.runtime.sendMessage({ action: 'getSettings' });
-      this.settings = response.success ? response.settings : {};
-    } catch (error) {
-      console.error('Failed to load settings:', error);
-      this.settings = {};
-    }
   }
 
   setupEventListeners() {
@@ -3561,42 +2745,16 @@ class PopupController {
       this.exportHistory();
     });
 
-    // Settings
-    document.getElementById('show-confidence').addEventListener('change', (e) => {
-      this.updateSetting('showConfidence', e.target.checked);
-    });
-
-    document.getElementById('save-history').addEventListener('change', (e) => {
-      this.updateSetting('saveHistory', e.target.checked);
-    });
-
-    document.getElementById('enable-context-menu').addEventListener('change', (e) => {
-      this.updateSetting('enableContextMenu', e.target.checked);
-    });
-
-    document.getElementById('default-target-lang').addEventListener('change', (e) => {
-      this.updateSetting('defaultTargetLanguage', e.target.value);
-    });
-
     // Footer links
     document.getElementById('help-link').addEventListener('click', (e) => {
       e.preventDefault();
       this.showHelp();
     });
 
-    document.getElementById('about-link').addEventListener('click', (e) => {
+    document.getElementById('feedback-link').addEventListener('click', (e) => {
       e.preventDefault();
       this.showAbout();
     });
-  }
-
-  updateUI() {
-    // Update settings UI
-    document.getElementById('show-confidence').checked = this.settings.showConfidence !== false;
-    document.getElementById('save-history').checked = this.settings.saveHistory !== false;
-    document.getElementById('enable-context-menu').checked = this.settings.enableContextMenu !== false;
-    document.getElementById('default-target-lang').value = this.settings.defaultTargetLanguage || 'en';
-    document.getElementById('target-lang').value = this.settings.defaultTargetLanguage || 'en';
   }
 
   async translateText() {
@@ -3778,7 +2936,7 @@ class PopupController {
   async loadHistory() {
     try {
       const response = await chrome.runtime.sendMessage({
-        action: 'getTranslationHistory'
+        action: 'getHistory'
       });
 
       if (response.success) {
@@ -3868,7 +3026,7 @@ class PopupController {
   }
 
   updateStats() {
-    const totalTranslations = this.translationHistory.length;
+    const totalTranslations =this.translationHistory.length;
     const languagesUsed = new Set(
       this.translationHistory.flatMap(item => [item.fromLang, item.toLang])
     ).size;
@@ -3879,18 +3037,6 @@ class PopupController {
     document.getElementById('total-translations').textContent = totalTranslations;
     document.getElementById('languages-used').textContent = languagesUsed;
     document.getElementById('characters-translated').textContent = charactersTranslated.toLocaleString();
-  }
-
-  async updateSetting(key, value) {
-    try {
-      this.settings[key] = value;
-      await chrome.runtime.sendMessage({
-        action: 'updateSettings',
-        settings: { [key]: value }
-      });
-    } catch (error) {
-      console.error('Failed to update setting:', error);
-    }
   }
 
   setTranslating(isTranslating) {
@@ -4038,7 +3184,7 @@ A privacy-focused, production-ready browser extension for translation with a cus
 ### Core Functionality
 - **Custom Translation Engine**: Built from scratch with no external API dependencies
 - **Privacy First**: All translations happen locally in your browser
-- **Multi-Language Support**: English, Spanish, French, German, Italian, Portuguese, and more
+- **Multi-Language Support**: English, Spanish, French, German, and more
 - **Offline Capable**: Works without internet connection
 - **Lightning Fast**: Instant translations with local processing
 
@@ -4074,7 +3220,6 @@ A privacy-focused, production-ready browser extension for translation with a cus
 2. Save each file with its exact name:
    - \`manifest.json\`
    - \`background.js\`
-   - \`translation-engine.js\`
    - \`content.js\`
    - \`content.css\`
    - \`popup.html\`
@@ -4110,11 +3255,26 @@ A privacy-focused, production-ready browser extension for translation with a cus
 ## ⚙️ Configuration
 
 ### Supported Languages
-- **English** (en) - **Spanish** (es) - **French** (fr) - **German** (de)
-- **Italian** (it) - **Portuguese** (pt) - **Russian** (ru) - **Japanese** (ja)
-- **Korean** (ko) - **Chinese** (zh) - **Arabic** (ar) - **Hindi** (hi)
-- **Dutch** (nl) - **Swedish** (sv) - **Danish** (da) - **Norwegian** (no)
-- **Finnish** (fi) - **Polish** (pl) - **Czech** (cs) - **Hungarian** (hu)
+- **English** (en)
+- **Spanish** (es)
+- **French** (fr)
+- **German** (de)
+- **Italian** (it)
+- **Portuguese** (pt)
+- **Russian** (ru)
+- **Japanese** (ja)
+- **Korean** (ko)
+- **Chinese** (zh)
+- **Arabic** (ar)
+- **Hindi** (hi)
+- **Dutch** (nl)
+- **Swedish** (sv)
+- **Danish** (da)
+- **Norwegian** (no)
+- **Finnish** (fi)
+- **Polish** (pl)
+- **Czech** (cs)
+- **Hungarian** (hu)
 
 ### Keyboard Shortcuts
 - **Ctrl+Shift+T**: Translate current page
@@ -4135,7 +3295,6 @@ A privacy-focused, production-ready browser extension for translation with a cus
 - **Service Worker**: Background processing with \`background.js\`
 - **Content Scripts**: Page interaction with \`content.js\`
 - **Popup Interface**: Extension popup with \`popup.html/css/js\`
-- **Translation Engine**: Custom engine in \`translation-engine.js\`
 
 ### Translation Engine
 - **Custom Dictionary**: 1000+ common words and phrases
@@ -4150,7 +3309,7 @@ A privacy-focused, production-ready browser extension for translation with a cus
 - **No External Storage**: Complete privacy protection
 
 ### Performance
-- **Memory Usage**: ~3MB total extension size
+- **Memory Usage**: ~5MB total extension size
 - **Translation Speed**: <100ms for common phrases
 - **Cache Efficiency**: 90%+ cache hit rate for repeated text
 - **CPU Usage**: Minimal impact on browser performance
@@ -4243,678 +3402,5 @@ Built with modern web technologies and best practices for a secure, fast, and pr
 ---
 
 **Pure Translator** - Privacy-focused translation for everyone.`;
-
-const installationContent = `# Pure Translator Installation Guide
-
-Complete step-by-step instructions for installing the Pure Translator browser extension.
-
-## 📋 Prerequisites
-
-### System Requirements
-- **Operating System**: Windows 10+, macOS 10.14+, or Linux
-- **RAM**: 4GB minimum
-- **Storage**: 50MB free space
-- **Browser**: Chrome 88+, Edge 88+, Brave, or Opera 74+
-
-### Before You Start
-- Ensure you have administrator privileges on your computer
-- Close any unnecessary browser tabs to free up memory
-- Have a stable internet connection for downloading files
-
-## 🚀 Installation Methods
-
-### Method 1: Quick Install (Recommended)
-
-1. **Download Extension Package**
-   - Click the "Download Extension" button from the showcase
-   - Save all files to a new folder on your computer
-   - Ensure all files are in the same directory
-
-2. **Open Chrome Extensions Page**
-   - Open Google Chrome browser
-   - Type \`chrome://extensions/\` in the address bar
-   - Press Enter to navigate to the extensions page
-
-3. **Enable Developer Mode**
-   - Look for the "Developer mode" toggle in the top-right corner
-   - Click the toggle to enable Developer mode
-   - You should see additional options appear
-
-4. **Load the Extension**
-   - Click the "Load unpacked" button
-   - Navigate to the folder containing your extension files
-   - Select the folder and click "Select Folder"
-   - The extension should now appear in your extensions list
-
-5. **Verify Installation**
-   - Look for the Pure Translator icon in your browser toolbar
-   - Click the icon to open the popup interface
-   - Try translating some text to confirm it's working
-
-### Method 2: Manual File Setup
-
-1. **Create Extension Directory**
-   \`\`\`
-   mkdir pure-translator-extension
-   cd pure-translator-extension
-   \`\`\`
-
-2. **Download Individual Files**
-   - Save each file with its exact filename:
-     - \`manifest.json\`
-     - \`background.js\`
-     - \`translation-engine.js\`
-     - \`content.js\`
-     - \`content.css\`
-     - \`popup.html\`
-     - \`popup.css\`
-     - \`popup.js\`
-
-3. **Verify File Structure**
-   \`\`\`
-   pure-translator-extension/
-   ├── manifest.json
-   ├── background.js
-   ├── translation-engine.js
-   ├── content.js
-   ├── content.css
-   ├── popup.html
-   ├── popup.css
-   └── popup.js
-   \`\`\`
-
-4. **Load Extension**
-   - Follow steps 2-5 from Method 1
-
-## 🔧 Configuration
-
-### Initial Setup
-
-1. **Open Extension Popup**
-   - Click the Pure Translator icon in your toolbar
-   - The popup interface should open
-
-2. **Configure Default Settings**
-   - Set your preferred target language
-   - Enable/disable features as needed:
-     - ✅ Show translation confidence
-     - ✅ Save translation history
-     - ✅ Enable context menu
-     - ✅ Enable page translation
-
-3. **Test Basic Functionality**
-   - Enter some text in the translation box
-   - Select source and target languages
-   - Click "Translate" to test the engine
-
-### Advanced Configuration
-
-1. **Keyboard Shortcuts**
-   - The extension uses \`Ctrl+Shift+T\` for page translation
-   - \`Escape\` key closes translation UI
-   - These shortcuts work automatically after installation
-
-2. **Context Menu Setup**
-   - Right-click on any webpage
-   - You should see "Translate" options in the context menu
-   - If not visible, check that context menu is enabled in settings
-
-3. **Privacy Settings**
-   - All data is stored locally by default
-   - Translation history is limited to 100 items
-   - No external servers are contacted
-
-## 🛠️ Troubleshooting
-
-### Common Installation Issues
-
-#### Extension Not Loading
-**Problem**: Extension doesn't appear after loading
-**Solutions**:
-- Ensure all files are in the same folder
-- Check that Developer mode is enabled
-- Try reloading the extension page
-- Verify file permissions (should be readable)
-
-#### Manifest Errors
-**Problem**: "Manifest file is missing or unreadable"
-**Solutions**:
-- Check that \`manifest.json\` exists in the root folder
-- Verify the JSON syntax is valid
-- Ensure file encoding is UTF-8
-- Re-download the manifest file if corrupted
-
-#### Permission Denied
-**Problem**: Cannot load extension due to permissions
-**Solutions**:
-- Run Chrome as administrator (Windows)
-- Check folder permissions
-- Move extension folder to a different location
-- Ensure antivirus isn't blocking the files
-
-#### Extension Icon Missing
-**Problem**: No icon appears in toolbar
-**Solutions**:
-- Check if extension is enabled in chrome://extensions/
-- Look for the icon in the extensions menu (puzzle piece icon)
-- Pin the extension to the toolbar
-- Restart Chrome browser
-
-### Browser-Specific Issues
-
-#### Google Chrome
-- Ensure Chrome version is 88 or higher
-- Check for Chrome updates
-- Clear browser cache if issues persist
-
-#### Microsoft Edge
-- Enable "Allow extensions from other stores"
-- Follow the same installation steps as Chrome
-- Edge 88+ required for full compatibility
-
-#### Brave Browser
-- Disable Brave Shields for the extension
-- Allow all permissions when prompted
-- Same installation process as Chrome
-
-### Performance Issues
-
-#### Slow Translation
-**Causes & Solutions**:
-- Large text blocks: Limit input to <5000 characters
-- Low memory: Close unnecessary tabs
-- Cache full: Clear translation history
-
-#### High Memory Usage
-**Solutions**:
-- Restart browser periodically
-- Clear extension cache
-- Limit concurrent translations
-
-## ✅ Verification Steps
-
-### Post-Installation Checklist
-
-1. **Extension Visibility**
-   - [ ] Icon appears in browser toolbar
-   - [ ] Popup opens when icon is clicked
-   - [ ] Extension listed in chrome://extensions/
-
-2. **Core Functionality**
-   - [ ] Text translation works in popup
-   - [ ] Context menu shows translation options
-   - [ ] Floating button appears on text selection
-   - [ ] Page translation works with Ctrl+Shift+T
-
-3. **Settings & Features**
-   - [ ] Settings can be modified
-   - [ ] Translation history saves
-   - [ ] Export functionality works
-   - [ ] Language detection functions
-
-4. **Privacy & Security**
-   - [ ] No external network requests
-   - [ ] Data stored locally only
-   - [ ] No tracking or analytics
-
-### Testing Translation Quality
-
-1. **Basic Words**
-   - Test: "hello" → "hola" (English to Spanish)
-   - Test: "thank you" → "merci" (English to French)
-   - Test: "goodbye" → "auf wiedersehen" (English to German)
-
-2. **Common Phrases**
-   - Test: "how are you" → "¿cómo estás?" (English to Spanish)
-   - Test: "good morning" → "bonjour" (English to French)
-   - Test: "excuse me" → "entschuldigung" (English to German)
-
-3. **Language Detection**
-   - Enter Spanish text with auto-detect
-   - Verify correct language identification
-   - Test with multiple languages
-
-## 🔄 Updates & Maintenance
-
-### Keeping Extension Updated
-
-1. **Manual Updates**
-   - Download new version files
-   - Replace old files in extension folder
-   - Reload extension in chrome://extensions/
-
-2. **Backup Settings**
-   - Export translation history before updates
-   - Note custom settings
-   - Save important translations
-
-### Maintenance Tasks
-
-1. **Weekly**
-   - Clear translation cache if performance degrades
-   - Check for browser updates
-
-2. **Monthly**
-   - Export translation history backup
-   - Review and clean old translations
-   - Check extension permissions
-
-## 📞 Getting Help
-
-### Support Resources
-
-1. **Documentation**
-   - Read the complete README.md
-   - Check the Usage Guide
-   - Review troubleshooting section
-
-2. **Common Solutions**
-   - Restart browser
-   - Reload extension
-   - Clear browser cache
-   - Check permissions
-
-3. **Reporting Issues**
-   - Note browser version
-   - Describe exact steps to reproduce
-   - Include error messages
-   - Mention operating system
-
-### Contact Information
-
-For additional support:
-- Check the troubleshooting guide
-- Review browser console for errors
-- Ensure all files are properly downloaded
-
----
-
-**Installation Complete!** You're now ready to use Pure Translator for private, secure translation.`;
-
-const usageGuideContent = `# Pure Translator Usage Guide
-
-Comprehensive guide to using all features of the Pure Translator browser extension.
-
-## 🚀 Getting Started
-
-### First Launch
-
-1. **Open the Extension**
-   - Click the Pure Translator icon in your browser toolbar
-   - The popup interface will open with the main translation tool
-
-2. **Initial Setup**
-   - Set your preferred default target language
-   - Configure settings according to your needs
-   - Test the translation with a simple phrase
-
-3. **Quick Test**
-   - Type "hello" in the text box
-   - Select English → Spanish
-   - Click "Translate" to see "hola"
-
-## 📝 Translation Methods
-
-### Method 1: Popup Interface
-
-**Best for**: Quick translations, testing phrases, managing history
-
-1. **Open Popup**
-   - Click the extension icon
-   - The main interface appears
-
-2. **Enter Text**
-   - Type or paste text in the input box
-   - Character limit: 5,000 characters
-   - Real-time character count displayed
-
-3. **Select Languages**
-   - Source: Choose language or "Auto-detect"
-   - Target: Select desired output language
-   - Use swap button (⇄) to reverse languages
-
-4. **Translate**
-   - Click the "Translate" button
-   - Translation appears in the result box
-   - Confidence score shown (if enabled)
-
-5. **Actions**
-   - 📋 **Copy**: Copy translation to clipboard
-   - 🔊 **Speak**: Hear translation aloud
-   - 💾 **Save**: Add to translation history
-
-### Method 2: Text Selection
-
-**Best for**: Translating specific text on web pages
-
-1. **Select Text**
-   - Highlight any text on a webpage
-   - Text can be words, sentences, or paragraphs
-
-2. **Floating Button**
-   - A floating translate button (🌐) appears
-   - Click the button for instant translation
-
-3. **Context Menu**
-   - Right-click on selected text
-   - Choose "Translate" from context menu
-   - Select specific target language
-
-4. **View Translation**
-   - Translation popup appears near selection
-   - Shows original text, translation, and confidence
-   - Includes copy, speak, and save options
-
-### Method 3: Page Translation
-
-**Best for**: Translating entire web pages
-
-1. **Keyboard Shortcut**
-   - Press \`Ctrl+Shift+T\` on any webpage
-   - Page translation begins automatically
-
-2. **Context Menu**
-   - Right-click anywhere on the page
-   - Select "Translate Page"
-
-3. **Popup Interface**
-   - Use the "Translate Page" button in popup
-   - Monitor translation progress
-
-4. **Restore Original**
-   - Click the status bar to restore original text
-   - Or use the "Restore Original" button
-
-## ⚙️ Features Guide
-
-### Language Detection
-
-**Automatic Detection**
-- Set source language to "Auto-detect"
-- Engine analyzes text patterns and characters
-- Supports detection for all major languages
-
-**Manual Selection**
-- Choose specific source language for better accuracy
-- Useful when auto-detection is uncertain
-- Prevents translation errors
-
-### Translation History
-
-**Viewing History**
-- Open popup and scroll to "Translation History"
-- Shows last 100 translations
-- Displays original text, translation, and metadata
-
-**Using History**
-- Click any history item to reload it
-- Automatically fills translation interface
-- Useful for repeating common translations
-
-**Managing History**
-- **Clear All**: Remove all saved translations
-- **Export**: Download history as CSV file
-- Automatic cleanup keeps only recent items
-
-### Settings & Customization
-
-**Translation Settings**
-- **Show Confidence**: Display translation quality score
-- **Save History**: Enable/disable history saving
-- **Context Menu**: Enable right-click translation options
-- **Default Language**: Set preferred target language
-
-**Privacy Settings**
-- All settings stored locally
-- No data sent to external servers
-- Complete privacy protection
-
-### Statistics
-
-**Usage Metrics**
-- **Total Translations**: Count of all translations
-- **Languages Used**: Number of different languages
-- **Characters Translated**: Total character count
-
-**Performance Insights**
-- Monitor your translation patterns
-- Identify most-used language pairs
-- Track productivity over time
-
-## 🎯 Advanced Features
-
-### Text-to-Speech
-
-**Using Speech**
-1. Translate any text
-2. Click the 🔊 speak button
-3. Hear the translation pronounced
-4. Adjust browser volume as needed
-
-**Supported Languages**
-- Works with all major languages
-- Uses browser's built-in speech synthesis
-- Quality varies by language and browser
-
-### Keyboard Shortcuts
-
-**Global Shortcuts**
-- \`Ctrl+Shift+T\`: Translate current page
-- \`Escape\`: Close any translation UI
-- \`Alt+T\`: Open extension popup (if configured)
-
-**In-Popup Shortcuts**
-- \`Ctrl+C\`: Copy translation result
-- \`Enter\`: Trigger translation
-- \`Tab\`: Navigate between fields
-
-### Batch Translation
-
-**Multiple Selections**
-1. Select first text block
-2. Translate using floating button
-3. Select next text block
-4. Previous translation remains visible
-5. Build up multiple translations
-
-**Page Sections**
-- Translate paragraphs individually
-- Better accuracy than full page translation
-- Maintain context and formatting
-
-## 🔧 Customization Options
-
-### Language Preferences
-
-**Setting Defaults**
-1. Open popup settings
-2. Choose "Default target language"
-3. Select your most-used language
-4. All new translations use this default
-
-**Language Pairs**
-- Create shortcuts for common pairs
-- English ↔ Spanish for bilingual users
-- French ↔ German for European content
-
-### Interface Customization
-
-**Popup Behavior**
-- Resize popup window if needed
-- Pin extension to toolbar for quick access
-- Use keyboard shortcuts for efficiency
-
-**Visual Preferences**
-- Dark mode support (automatic)
-- High contrast mode compatibility
-- Responsive design for all screen sizes
-
-## 📊 Best Practices
-
-### Translation Accuracy
-
-**For Best Results**
-1. **Use Complete Sentences**: Better context for translation
-2. **Avoid Slang**: Stick to standard language
-3. **Check Confidence**: Higher scores = better accuracy
-4. **Verify Important Text**: Double-check critical translations
-
-**Common Pitfalls**
-- Very short text may lack context
-- Technical terms might not translate well
-- Idioms and expressions need careful review
-
-### Performance Optimization
-
-**Speed Tips**
-1. **Clear History**: Remove old translations periodically
-2. **Limit Text Size**: Keep under 1000 characters for speed
-3. **Use Cache**: Repeated text translates instantly
-4. **Close Unused Tabs**: Free up browser memory
-
-**Memory Management**
-- Extension uses minimal memory
-- Cache automatically manages size
-- No external resources loaded
-
-### Privacy Best Practices
-
-**Data Protection**
-1. **Local Only**: All data stays on your device
-2. **No Tracking**: Zero analytics or monitoring
-3. **Secure Storage**: Browser's encrypted storage
-4. **Regular Cleanup**: Clear history when needed
-
-**Sensitive Content**
-- Safe for confidential documents
-- No network transmission
-- Complete offline capability
-
-## 🛠️ Troubleshooting
-
-### Common Issues
-
-**Translation Not Working**
-- Check if text is selectable
-- Ensure page has finished loading
-- Try refreshing the page
-- Verify extension is enabled
-
-**Floating Button Missing**
-- Select text more precisely
-- Check if page blocks content scripts
-- Try right-click context menu instead
-
-**Page Translation Incomplete**
-- Large pages take longer to process
-- Some dynamic content may not translate
-- Try translating sections individually
-
-**Poor Translation Quality**
-- Check confidence score
-- Try different source language
-- Break long text into smaller parts
-- Verify text is in supported language
-
-### Performance Issues
-
-**Slow Response**
-- Clear translation cache
-- Restart browser
-- Check available memory
-- Reduce text size
-
-**High Memory Usage**
-- Clear browser cache
-- Close unnecessary tabs
-- Restart extension
-- Update browser
-
-### Browser Compatibility
-
-**Chrome Issues**
-- Update to latest version
-- Check extension permissions
-- Disable conflicting extensions
-
-**Edge/Brave Issues**
-- Enable extension compatibility
-- Check security settings
-- Allow all permissions
-
-## 📈 Tips & Tricks
-
-### Productivity Hacks
-
-**Quick Workflows**
-1. **Pin Extension**: Keep icon visible in toolbar
-2. **Use Shortcuts**: Master Ctrl+Shift+T for pages
-3. **Save Favorites**: Use history for common phrases
-4. **Export Data**: Backup important translations
-
-**Power User Features**
-- Combine with other productivity tools
-- Use for language learning
-- Create translation reference sheets
-- Build multilingual documentation
-
-### Language Learning
-
-**Study Aid**
-1. Translate new vocabulary
-2. Compare sentence structures
-3. Practice pronunciation with speech
-4. Build personal phrase collections
-
-**Immersion Support**
-- Translate foreign websites
-- Understand social media content
-- Read international news
-- Explore global content
-
-### Professional Use
-
-**Business Applications**
-- Translate emails and documents
-- Understand international websites
-- Communicate with global teams
-- Research foreign markets
-
-**Academic Research**
-- Access international sources
-- Translate research papers
-- Understand foreign publications
-- Collaborate globally
-
-## 🔄 Updates & Maintenance
-
-### Keeping Current
-
-**Regular Maintenance**
-1. **Weekly**: Clear cache if performance degrades
-2. **Monthly**: Export history backup
-3. **Quarterly**: Review and update settings
-
-**Version Updates**
-- Download new versions when available
-- Read changelog for new features
-- Test functionality after updates
-
-### Data Management
-
-**History Management**
-- Export important translations
-- Clear old, unused entries
-- Organize by language pairs
-- Backup before major changes
-
-**Settings Backup**
-- Note custom configurations
-- Document preferred languages
-- Save important shortcuts
-
----
-
-**Master Pure Translator** and enjoy private, secure translation for all your needs!`;
 
 export default App;
