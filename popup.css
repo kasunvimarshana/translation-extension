@@ -1,0 +1,249 @@
+:root {
+  --primary: #4a6fa5;
+  --primary-dark: #3a5a8a;
+  --secondary: #f5f7fa;
+  --text: #333;
+  --text-light: #666;
+  --border: #ddd;
+  --success: #4caf50;
+  --error: #f44336;
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: var(--secondary);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 10px;
+  width: 400px;
+  font-size: 14px;
+}
+
+.container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  height: 500px;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  background: var(--primary);
+  color: white;
+  padding: 15px;
+  text-align: center;
+}
+
+h1 {
+  font-size: 1.4rem;
+  margin-bottom: 5px;
+}
+
+.subtitle {
+  opacity: 0.9;
+  font-size: 0.85rem;
+}
+
+.main-content {
+  padding: 15px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.section {
+  margin-bottom: 15px;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+  color: var(--primary-dark);
+}
+
+.input-group {
+  margin-bottom: 10px;
+}
+
+label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 500;
+  color: var(--text-light);
+  font-size: 0.9rem;
+}
+
+select, textarea, input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  transition: border-color 0.3s;
+}
+
+select:focus, textarea:focus, input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+button {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: background 0.3s;
+  width: 100%;
+  margin-top: 8px;
+}
+
+button:hover {
+  background: var(--primary-dark);
+}
+
+button.secondary {
+  background: white;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+}
+
+button.secondary:hover {
+  background: var(--secondary);
+}
+
+.result-container {
+  background: var(--secondary);
+  border-radius: 6px;
+  padding: 10px;
+  margin-top: 15px;
+  min-height: 80px;
+  border: 1px solid var(--border);
+}
+
+.result-text {
+  line-height: 1.5;
+  white-space: pre-wrap;
+  font-size: 0.9rem;
+}
+
+.language-info {
+  font-size: 0.8rem;
+  color: var(--text-light);
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border);
+}
+
+.dictionary-section {
+  background: #f9f9f9;
+  border-radius: 6px;
+  padding: 10px;
+  margin-top: 15px;
+}
+
+.dictionary-item {
+  padding: 8px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.dictionary-item:last-child {
+  border-bottom: none;
+}
+
+.dictionary-item div {
+  flex: 1;
+}
+
+.dictionary-item button {
+  width: auto;
+  padding: 4px 8px;
+  margin-left: 5px;
+  font-size: 0.8rem;
+  margin-top: 0;
+}
+
+.message {
+  padding: 10px;
+  border-radius: 6px;
+  margin: 10px 0;
+  text-align: center;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.success {
+  background: rgba(76, 175, 80, 0.1);
+  color: var(--success);
+  border: 1px solid var(--success);
+}
+
+.error {
+  background: rgba(244, 67, 54, 0.1);
+  color: var(--error);
+  border: 1px solid var(--error);
+}
+
+.hidden {
+  display: none;
+}
+
+.tab-container {
+  display: flex;
+  margin-bottom: 15px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tab {
+  padding: 8px 15px;
+  cursor: pointer;
+  font-weight: 500;
+  border-bottom: 3px solid transparent;
+  font-size: 0.9rem;
+  flex: 1;
+  text-align: center;
+}
+
+.tab.active {
+  border-bottom: 3px solid var(--primary);
+  color: var(--primary);
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+footer {
+  text-align: center;
+  padding: 10px;
+  color: var(--text-light);
+  font-size: 0.75rem;
+  border-top: 1px solid var(--border);
+  margin-top: 10px;
+}
