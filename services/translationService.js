@@ -1,4 +1,4 @@
-class TranslationService {
+export class TranslationService {
   constructor() {
     this.dictionary = {
       "hello": "hola",
