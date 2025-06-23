@@ -1,13 +1,9 @@
 {
   "name": "Pure Translate Extension",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Translate selected text using the Google Translate API.",
   "manifest_version": 3,
   "permissions": ["contextMenus", "activeTab", "scripting", "storage"],
-  "host_permissions": [
-    "https://translation.googleapis.com/*",
-    "<all_urls>"
-  ],
   "background": {
     "service_worker": "background.js",
     "type": "module"

@@ -1,6 +1,9 @@
 export function showTooltip(text) {
+  console.log('[Tooltip] showTooltip called with text:', text);
+
   const existingTooltip = document.getElementById('translation-tooltip');
   if (existingTooltip) {
+    console.log('[Tooltip] Existing tooltip found, removing it.');
     existingTooltip.remove();
   }
 
@@ -9,10 +12,20 @@ export function showTooltip(text) {
   tooltip.textContent = text;
 
   document.body.appendChild(tooltip);
-  setTimeout(() => {
-    tooltip.classList.add('visible');
-  }, 10);
+  console.log('[Tooltip] Tooltip element appended to the document.');
 
-  // Auto remove after 5 seconds
-  setTimeout(() => tooltip.remove(), 5000);
+  requestAnimationFrame(() => {
+    tooltip.classList.add('visible');
+    console.log('[Tooltip] Tooltip made visible.');
+  });
+
+  setTimeout(() => {
+    tooltip.classList.remove('visible');
+    console.log('[Tooltip] Tooltip visibility removed, starting removal timer.');
+
+    setTimeout(() => {
+      tooltip.remove();
+      console.log('[Tooltip] Tooltip element removed from the document.');
+    }, 300);
+  }, 5000);
 }

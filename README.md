@@ -3,16 +3,17 @@
 translation-extension/
 ├─ icons/
 │  └─ icon.png
+├─ data/
+│  └─ dictionary.json
 ├─ services/
 │  └─ translationService.js
-├─ background.js
-├─ content.js
-├─ tooltip.js
+├─ background.js           (Service Worker / Main Logic)
+├─ content.js              (Displays Results)
+├─ tooltip.js              (UI Logic)
 ├─ styles/
 │  └─ tooltip.css
-├─ data/
-│  └─ dictionary.js
 ├─ manifest.json
+
 
 # Install & Test
 ## Save files in a directory (translation-extension).
