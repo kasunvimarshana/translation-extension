@@ -10,8 +10,9 @@ translation-extension/
 ├─ tooltip.js
 ├─ styles/
 │  └─ tooltip.css
+├─ data/
+│  └─ dictionary.js
 ├─ manifest.json
-
 
 # Install & Test
 ## Save files in a directory (translation-extension).

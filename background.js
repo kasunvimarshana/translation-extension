@@ -1,7 +1,8 @@
 import { TranslationService } from './services/translationService.js';
-import { API_KEY } from './config.js';
+// import dictionary from './data/dictionary.json' assert { type: 'json' };
+import { DICTIONARY } from './data/dictionary.js';
 
-const translationService = new TranslationService(API_KEY, 'es');
+const translationService = new TranslationService(DICTIONARY, 'es');
 
 // Create the context menu
 chrome.runtime.onInstalled.addListener(() => {
@@ -12,20 +13,19 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
-// // Handle context menu click
-// chrome.contextMenus.onClicked.addListener((info, tab) => {
-//   if (info.menuItemId === "translate" && info.selectionText) {
-//     translationService.translate(info.selectionText).then(translated => {
-//       chrome.scripting.executeScript({
-//         target: { tabId: tab.id },
-//         func: (translation) => {
-//           chrome.runtime.sendMessage({ action: "showTranslation", translation });
-//         },
-//         args: [translated]
-//       });
-//     });
-//   }
-// });
+// Handle context menu click
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+  if (info.menuItemId === "translate" && info.selectionText) {
+    const {translation: translated} = translationService.translate(info.selectionText);
+    chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      func: (translationResult) => {
+        chrome.runtime.sendMessage({ action: "showTranslation", translationResult });
+      },
+      args: [translated]
+    });
+  }
+});
 
 // Handle context menu click
 chrome.contextMenus.onClicked.addListener((info, tab) => {
@@ -42,11 +42,10 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 
 chrome.runtime.onMessage.addListener((message, sender) => {
   if (message.action === "translate") {
-    translationService.translate(message.text).then(translated => {
-      chrome.tabs.sendMessage(sender.tab.id, {
-        action: "showTranslation",
-        translation: translated
-      });
+    const {translation: translated} = translationService.translate(message.text);
+    chrome.tabs.sendMessage(sender.tab.id, {
+      action: "showTranslation",
+      translation: translated
     });
   }
 });

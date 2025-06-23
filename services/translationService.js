@@ -1,37 +1,48 @@
 export class TranslationService {
-  constructor(apiKey, targetLang = 'es') {
-    this.apiKey = apiKey;
+  constructor(dictionary, targetLang = 'es') {
+    this.dictionary = dictionary;
     this.targetLang = targetLang;
     this.cache = {};
   }
 
-  async translate(text) {
-    if (!text) return '';
-    if (this.cache[text]) {
-      return this.cache[text];
+  translate(text, sourceLang = 'en') {
+    if (!text) {
+      return {
+        translation: text,
+        sourceLang,
+        targetLang: this.targetLang,
+        confidence: 1.0
+      };
     }
 
-    try {
-      const response = await fetch(`https://translation.googleapis.com/language/translate/v2?key=${this.apiKey}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ q: text, target: this.targetLang, format: 'text' })
-      });
-      const data = await response.json();
+    const normalized = text.trim().toLowerCase();
+    const cacheKey = `${sourceLang}:${this.targetLang}:${normalized}`;
 
-      if (data?.data?.translations?.[0]?.translatedText) {
-        const translation = data.data.translations[0].translatedText;
-        this.cache[text] = translation;
-        return translation;
-      } else {
-        console.error('Google Translate error:', data);
-        return text;
-      }
-    } catch (error) {
-      console.error(error);
-      return text;
+    if (this.cache[cacheKey]) {
+      return this.cache[cacheKey];
     }
+
+    const sourceWords = this.dictionary[sourceLang];
+    const targetWords = this.dictionary[this.targetLang];
+    if (!sourceWords || !targetWords) {
+      return {
+        translation: text,
+        sourceLang,
+        targetLang: this.targetLang,
+        confidence: 0.0
+      };
+    }
+
+    // Find a direct match
+    const translation = targetWords[normalized];
+    const result = {
+      translation: translation || text,
+      sourceLang,
+      targetLang: this.targetLang,
+      confidence: translation ? 1.0 : 0.5
+    };
+    this.cache[cacheKey] = result;
+
+    return result;
   }
 }
